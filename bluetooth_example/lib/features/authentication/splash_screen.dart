@@ -2,6 +2,7 @@ import 'package:bluetooth_example/core/brand_guideline/brand_guidline.dart';
 import 'package:bluetooth_example/core/custom_widgets/animated_app_bar/animated_app_bar_exports.dart';
 import 'package:bluetooth_example/core/custom_widgets/logo_widget.dart';
 import 'package:bluetooth_example/core/routing/route_names.dart';
+import 'package:bluetooth_example/features/bluetooth-feature/bluetooth_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -35,18 +36,17 @@ class SplashScreen extends StatelessWidget {
             Column(
               children: [
                 MaterialButton(
-                  height: deviceWidth*0.1,
-                    minWidth: deviceWidth*0.5,
+                    height: deviceWidth * 0.1,
+                    minWidth: deviceWidth * 0.5,
                     color: Brand.paleGreyBlue,
                     onPressed: () {
-                    Navigator.of(context).maybePop();
-                     Navigator.of(context).pushReplacementNamed(RouteAccessors.bluetoothName);
+                      Navigator.of(context).maybePop();
+                      Navigator.of(context)
+                          .pushReplacementNamed(RouteAccessors.bluetoothName);
                     },
                     child: Text(
                       'START',
-                      style: GoogleFonts.titanOne(
-                        color: Colors.white
-                      ),
+                      style: GoogleFonts.titanOne(color: Colors.white),
                     )),
                 SizedBox(height: deviceWidth * 0.1),
               ],

@@ -5,9 +5,11 @@ import 'package:bluetooth_example/features/esp32-command-screen/dashboard_screen
 import 'package:flutter/material.dart';
 
 abstract class RouteGenerator {
+
   static Route<dynamic> onGenerateRoute(
     RouteSettings settings,
   ) {
+
     switch (settings.name) {
       case RouteAccessors.dashboardName:
         return MaterialPageRoute(

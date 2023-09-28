@@ -3,6 +3,7 @@ import 'package:bluetooth_example/core/routing/pop_screen_util.dart';
 import 'package:bluetooth_example/features/bluetooth-feature/bloototh_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 import 'custome-widgets/bluetooth_widgets.dart';
@@ -35,37 +36,59 @@ class BluetoothScreen extends StatelessWidget {
           child: Consumer<BluetoothViewModel>(
             builder: (BuildContext context, BluetoothViewModel instance,
                 Widget? child) {
-
               return Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   HeaderWidget(
                     device: instance.currentDevice,
-                    onToggleBtn: (val) {
-                     if(val){
-                       if(instance.currentState==CustomBluetoothState.intermediate1){
-                         showPopup(
-                             context: context,
-                             title: 'we require bluetooth permission',
-                             ctaWidget: MaterialButton(onPressed: () {
-
-                             }),
-                             centerIcon: Icon(Icons.bluetooth,
-                                 size: Brand.appPadding(context: context)),
-                             innerPadding: Brand.appPadding(context: context),
-                             text: 'we require the current permissions to operate');
-                       }
-                     }
+                    onToggleBtn: (val) async {
+                      await instance.tryEnableBluetooth().then((value) {
+                        if (instance.currentState ==
+                                CustomBluetoothState.initial ||
+                            instance.currentState ==
+                                CustomBluetoothState.intermediate1) {
+                          showPopup(
+                              context: context,
+                              title: 'we require bluetooth permission',
+                              ctaWidget: MaterialButton(
+                                  color: Brand.brightTeal,
+                                  height: deviceWidth * 0.1,
+                                  child: Text('Grant Permission',
+                                      style: GoogleFonts.poppins(
+                                        color: Colors.white,
+                                        fontWeight: Brand.h3Weight,
+                                        fontSize: Brand.h3Size(context),
+                                      )),
+                                  onPressed: () async {
+                                    await Future.wait([
+                                      Permission.bluetoothConnect.request(),
+                                      Permission.bluetoothScan.request()
+                                    ]).then((value) async {
+                                      if (await Permission
+                                              .bluetoothConnect.isGranted &&
+                                          await Permission
+                                              .bluetoothScan.isGranted) {
+                                        Navigator.of(context).pop();
+                                      }
+                                    });
+                                  }),
+                              centerIcon: Icon(Icons.bluetooth,
+                                  color: Brand.brightTeal,
+                                  size: Brand.appPadding(context: context)),
+                              innerPadding: Brand.appPadding(context: context),
+                              text:
+                                  'we require the current permissions to operate,'
+                                  ' bluetooth connect permission && bluetooth base permission ');
+                        }
+                      });
                     },
                     enabled: instance.toggleValue,
                   ),
                   Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: Brand.appPadding(context: context)),
-                      child: const Divider(height: 2),
-
-
+                    padding: EdgeInsets.symmetric(
+                        horizontal: Brand.appPadding(context: context)),
+                    child: const Divider(height: 2),
                   ),
                 ],
               );
@@ -87,14 +110,11 @@ class BluetoothScreen extends StatelessWidget {
 /// final layout :
 ///
 class HeaderWidget extends StatelessWidget {
-  final DeviceDataDto device;
- bool? enabled;
+  DeviceDataDto? device;
+  bool? enabled;
   final Function(bool) onToggleBtn;
 
-   HeaderWidget(
-      {Key? key,
-      required this.device,
-      required this.onToggleBtn, this.enabled})
+  HeaderWidget({Key? key, this.device, required this.onToggleBtn, this.enabled})
       : super(key: key);
 
   @override
@@ -110,7 +130,7 @@ class HeaderWidget extends StatelessWidget {
             //mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                enabled??false
+                enabled ?? false
                     ? 'Thank you for enabling, now you can proceed'
                     : 'Please enable your bluetooth to use our app',
                 style: GoogleFonts.poppins(
@@ -123,14 +143,16 @@ class HeaderWidget extends StatelessWidget {
                 width: double.infinity,
                 child: SwitchListTile(
                   contentPadding: EdgeInsets.zero,
-                  title:
-                      Text(enabled??false ? 'Disable Bluetooth' : 'Enable Bluetooth',
-                          style: GoogleFonts.poppins(
-                            fontSize: Brand.h4Size(context),
-                            fontWeight: Brand.h4Weight,
-                            color: Brand.blackGrey,
-                          )),
-                  value: enabled??false,
+                  title: Text(
+                      enabled ?? false
+                          ? 'Disable Bluetooth'
+                          : 'Enable Bluetooth',
+                      style: GoogleFonts.poppins(
+                        fontSize: Brand.h4Size(context),
+                        fontWeight: Brand.h4Weight,
+                        color: Brand.blackGrey,
+                      )),
+                  value: enabled ?? false,
                   onChanged: onToggleBtn,
                 ),
               ),
@@ -155,7 +177,7 @@ class HeaderWidget extends StatelessWidget {
                                 fontWeight: Brand.h4Weight,
                                 color: Colors.white,
                               )),
-                          Text(device.name,
+                          Text(device!.name,
                               style: GoogleFonts.poppins(
                                 fontSize: Brand.h4Size(context),
                                 fontWeight: Brand.h4Weight,
@@ -175,7 +197,7 @@ class HeaderWidget extends StatelessWidget {
                                 fontWeight: Brand.h4Weight,
                                 color: Colors.white,
                               )),
-                          Text(device.address,
+                          Text(device!.address,
                               style: GoogleFonts.poppins(
                                 fontSize: Brand.h4Size(context),
                                 fontWeight: Brand.h4Weight,
@@ -196,7 +218,7 @@ class HeaderWidget extends StatelessWidget {
                                 fontWeight: Brand.h4Weight,
                                 color: Colors.white,
                               )),
-                          Text('${device.isDiscoverable}',
+                          Text('${device!.isDiscoverable}',
                               style: GoogleFonts.poppins(
                                 fontSize: Brand.h4Size(context),
                                 fontWeight: Brand.h4Weight,
