@@ -1,28 +1,65 @@
+import 'dart:async';
+
+import 'package:bluetooth_example/core/errors/failures.dart';
+import 'package:bluetooth_example/core/utils/bleutooth_repository_implementation.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-enum CustomBluetoothState {
+/*enum CustomBluetoothState {
   initial, // only show toggle btn
   intermediate1, // Bluetooth permissions grated but its not enabled
   secondState, // bluetooth is enabled => show device data ?
   intermediate2, // discovery failed show message
   finalState, // discovery Successful => show list of devices
-}
+}*/
 
 class BluetoothViewModel extends ChangeNotifier {
   bool toggleValue = false;
+  BluetoothRepositoryIMPL repositoryIMPL;
+  //CustomBluetoothState? currentState;
 
-  CustomBluetoothState? currentState;
-
-  DeviceDataDto currentDevice =
-      DeviceDataDto(name: 'UNKNOWN', address: 'UNKNOWN', isDiscoverable: false);
+  BluetoothDevice currentDevice =
+  const BluetoothDevice(name: 'UNKNOWN', address: 'UNKNOWN',isConnected: false);
   bool loading = false;
 
-  BluetoothViewModel() {
+  BluetoothViewModel({required this.repositoryIMPL}) {
     toggleValue = false;
     _init.call();
     notifyListeners();
+  }
+
+  Future<Either<Failure,bool>> toggleBtn()async{
+
+    return await repositoryIMPL.openBluetooth().then((result) {
+
+      result.fold((l) {
+        toggleValue=false;
+        notifyListeners();
+      },
+              (r) {
+                toggleValue=!toggleValue;
+                notifyListeners();
+              });
+
+      return result;
+    });
+
+  }
+
+/// test stream for testing purposes
+  Stream<BluetoothDiscoveryResult> devicesStream() async* {
+    for (int i = 0; i <= 6; i++) {
+      yield BluetoothDiscoveryResult(
+          device: BluetoothDevice(
+              address: "${i * i + 15}",
+              isConnected: false,
+              name: 'Test Device',
+              bondState: BluetoothBondState.none),
+          rssi: 20);
+      await Future.delayed(Duration(seconds: i));
+    }
   }
 
   Future<void> _init() async {
@@ -33,42 +70,9 @@ class BluetoothViewModel extends ChangeNotifier {
     // final permissionBLDiscoverable = await Permission.bluetoothAdvertise.status;
     // final permissionBLScan = await Permission.bluetoothScan.status;
 
-    await Future.wait([
-      Permission.bluetooth.status,
-      Permission.bluetoothConnect.status,
-      Permission.bluetoothAdvertise.status,
-      Permission.bluetoothScan.status,
-    ]).then((value) async {
-      debugPrint(
-          "permissions ${value[0].isGranted && value[1].isGranted && value[2].isGranted} ");
-
-      if (value[0].isGranted && value[1].isGranted && value[2].isGranted) {
-        currentState = CustomBluetoothState.intermediate1;
-        notifyListeners();
-        await FlutterBluetoothSerial.instance.state.then((result) {
-          debugPrint('bluetooth enabled ${result.isEnabled}');
-          if (result.isEnabled) {
-            toggleValue = true;
-            currentState = CustomBluetoothState.secondState;
-            notifyListeners();
-          } else {
-            toggleValue = false;
-            currentState = CustomBluetoothState.intermediate1;
-            notifyListeners();
-          }
-
-          // we need to call set device data
-        });
-      } else {
-        currentState = CustomBluetoothState.initial;
-        notifyListeners();
-      }
-    });
-    debugPrint('state in init $currentState');
-    _setDeviceData.call();
   }
 
-  Future<void> _setDeviceData() async {
+ /* Future<void> _setDeviceData() async {
     /// (bluetooth is on + permission is grated)  && toggle btn is on
     /// currentState == CustomBluetoothState.secondState
     debugPrint('currentState ${currentState.toString()}');
@@ -92,9 +96,9 @@ class BluetoothViewModel extends ChangeNotifier {
       notifyListeners();
     }
     debugPrint(currentDevice.toString());
-  }
+  }*/
 
-  Future<void> tryEnableBluetooth() async {
+/*  Future<void> tryEnableBluetooth() async {
     await Future.wait(
             [Permission.bluetooth.status, Permission.bluetoothConnect.status])
         .then((value) {
@@ -112,10 +116,10 @@ class BluetoothViewModel extends ChangeNotifier {
       _setDeviceData();
       notifyListeners();
     });
-  }
+  }*/
 }
 
-class DeviceDataDto {
+/*class DeviceDataDto {
   String name;
   String address;
   bool isDiscoverable;
@@ -128,4 +132,4 @@ class DeviceDataDto {
   @override
   toString() =>
       'name : $name , address : $address , isDiscoverable : $isDiscoverable';
-}
+}*/

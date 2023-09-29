@@ -1,5 +1,6 @@
 import 'package:bluetooth_example/core/routing/route_generator.dart';
 import 'package:bluetooth_example/core/routing/route_names.dart';
+import 'package:bluetooth_example/core/utils/bleutooth_repository_implementation.dart';
 import 'package:bluetooth_example/features/bluetooth-feature/bloototh_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -7,7 +8,7 @@ import 'package:provider/provider.dart';
 void main() {
   runApp( MultiProvider(
       providers: [
-        ChangeNotifierProvider<BluetoothViewModel>(create: (_)=>BluetoothViewModel())
+        ChangeNotifierProvider<BluetoothViewModel>(create: (_)=>BluetoothViewModel(repositoryIMPL: BluetoothRepositoryIMPL()))
       ],
       child: const MyApp()));
 }
