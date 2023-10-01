@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:bluetooth_example/core/brand_guideline/brand_guidline.dart';
 import 'package:bluetooth_example/core/routing/route_names.dart';
 import 'package:bluetooth_example/features/bluetooth-feature/bloototh_view_model.dart';
@@ -9,59 +7,19 @@ import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-class FooterWidget extends StatefulWidget {
+class FooterWidget extends StatelessWidget {
   const FooterWidget({Key? key}) : super(key: key);
 
   @override
-  State<FooterWidget> createState() => _FooterWidgetState();
-}
-
-class _FooterWidgetState extends State<FooterWidget> {
-  late final StreamSubscription<BluetoothDiscoveryResult> fakeSubscription;
-
-  List<BluetoothDiscoveryResult> listOfDevices =
-      List<BluetoothDiscoveryResult>.empty(growable: true);
-
-  @override
-  initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      fakeSubscription =
-          context.read<BluetoothViewModel>().devicesStream().listen(
-        (event) {
-          setState(() {
-            final existingIndex = listOfDevices.indexWhere(
-                (element) => element.device.address == event.device.address);
-            if (existingIndex >= 0) {
-              listOfDevices[existingIndex] = event;
-            } else {
-              listOfDevices.add(event);
-            }
-          });
-        },
-        onError: (e) {
-          print(e);
-          //fakeSubscription.cancel.call();
-        },
-            onDone: (){},
-        //onDone: ,
-        cancelOnError: true,
-      );
-    });
-  }
-
-  @override
-  void dispose() {
-    fakeSubscription.cancel();
-
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    final watcher=context.watch<BluetoothViewModel>();
+    final discoveryList = watcher.listOfDevicesDiscovered;
 
-        itemCount: listOfDevices.length,
+    /* context.select<BluetoothViewModel, List<BluetoothDiscoveryResult>>(
+            (value) => value.listOfDevicesDiscovered);
+    */
+    return ListView.builder(
+        itemCount: discoveryList.length,
         shrinkWrap: true,
         padding: EdgeInsets.zero,
         itemBuilder: (context, index) {
@@ -69,13 +27,13 @@ class _FooterWidgetState extends State<FooterWidget> {
           return BluetoothDeviceTile(
             onTap: () {
               Navigator.pushNamed(context, RouteAccessors.dashboardName,
-                  arguments: listOfDevices[index]);
+                  arguments: discoveryList[index]);
             },
-            blDevice: listOfDevices[index],
+            blDevice: discoveryList[index],
             onDismiss: (a) {
-              listOfDevices.removeWhere((element) =>
+              /* listOfDevices.removeWhere((element) =>
                   element.device.address ==
-                  listOfDevices[index].device.address);
+                  listOfDevices[index].device.address);*/
             },
           );
         });
@@ -136,14 +94,14 @@ class BluetoothDeviceTile extends StatelessWidget {
                     fontWeight: Brand.h3Weight,
                     color: Brand.darkBlue,
                     fontSize: Brand.h3Size(context))),
-            leading: blDevice.device.type == BluetoothDeviceType.dual
+            leading: blDevice.device.type == BluetoothDeviceType.le
                 ? const LeadingTileIcon(
                     size: 30,
                     icon: Icon(
-                      Icons.device_unknown,
+                      Icons.developer_board,
                     ),
                   )
-                : const LeadingTileIcon(size: 30, icon: Icon(Icons.device_hub)),
+                : const LeadingTileIcon(size: 30, icon: Icon(Icons.devices_other)),
           ),
         ),
       ),

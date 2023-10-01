@@ -82,17 +82,26 @@ class HeaderWidget extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text('My Device :',
+
                               style: GoogleFonts.poppins(
                                 fontSize: Brand.h4Size(context),
                                 fontWeight: Brand.h4Weight,
                                 color: Colors.white,
                               )),
-                          Text(device.name??'UNKNOWN',
-                              style: GoogleFonts.poppins(
-                                fontSize: Brand.h4Size(context),
-                                fontWeight: Brand.h4Weight,
-                                color: Colors.white,
-                              )),
+                          
+                          Expanded(
+                            child: Text(
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                textWidthBasis: TextWidthBasis.longestLine,
+                                softWrap: true,
+                                device.name??'UNKNOWN',
+                                style: GoogleFonts.poppins(
+                                  fontSize: Brand.h4Size(context),
+                                  fontWeight: Brand.h4Weight,
+                                  color: Colors.white,
+                                )),
+                          ),
                         ],
                       ),
                       SizedBox(
@@ -102,17 +111,28 @@ class HeaderWidget extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text('Address :',
+                              maxLines: 1,
+                              softWrap: true,
+                              overflow: TextOverflow.ellipsis,
+                              textWidthBasis: TextWidthBasis.parent,
                               style: GoogleFonts.poppins(
                                 fontSize: Brand.h4Size(context),
                                 fontWeight: Brand.h4Weight,
                                 color: Colors.white,
                               )),
-                          Text(device.address??"UNKNOWN",
-                              style: GoogleFonts.poppins(
-                                fontSize: Brand.h4Size(context),
-                                fontWeight: Brand.h4Weight,
-                                color: Colors.white,
-                              )),
+                          Expanded(
+                            child: Text(device.address,
+
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                textWidthBasis: TextWidthBasis.longestLine,
+                                softWrap: true,
+                                style: GoogleFonts.poppins(
+                                  fontSize: Brand.h4Size(context),
+                                  fontWeight: Brand.h4Weight,
+                                  color: Colors.white,
+                                )),
+                          ),
                         ],
                       ),
                       SizedBox(
@@ -122,7 +142,11 @@ class HeaderWidget extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text('Visible :',
+                          Text('is Paired :',
+                              maxLines: 1,
+                              softWrap: true,
+                              overflow: TextOverflow.ellipsis,
+                              textWidthBasis: TextWidthBasis.longestLine,
                               style: GoogleFonts.poppins(
                                 fontSize: Brand.h4Size(context),
                                 fontWeight: Brand.h4Weight,

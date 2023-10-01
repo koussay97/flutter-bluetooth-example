@@ -12,6 +12,7 @@ abstract interface class BluetoothRepository {
       {required int durationInSeconds});
 
   Future<Either<Failure, Stream<BluetoothDiscoveryResult>>> scanDevices();
+  Future<Either<Failure, void>> stopScanningDevices();
 
   Future<Either<Failure, bool>> pairDevice({required String deviceAddress});
 

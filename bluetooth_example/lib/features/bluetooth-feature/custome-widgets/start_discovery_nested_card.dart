@@ -15,17 +15,18 @@ class StartDiscoveryBtn extends StatefulWidget {
 }
 
 class _StartDiscoveryBtnState extends State<StartDiscoveryBtn> {
-  late bool toggle;
+
 
   @override
   void initState() {
-    toggle = false;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
  final bool visible = context.select<BluetoothViewModel,bool>((instance)=>instance.enableBluetooth);
+ final bool discoveryEnabled=context.select<BluetoothViewModel,bool>((instance)=>instance.discoveryEnabled);
+
     return Visibility(
       visible: visible,
       child: SizedBox(
@@ -39,17 +40,20 @@ class _StartDiscoveryBtnState extends State<StartDiscoveryBtn> {
             child: SwitchListTile(
               activeColor: Brand.darkGreyBlue,
               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              title: Text(toggle ? 'Stop Discovery' : 'Start Discovery',
+              title: Text(discoveryEnabled ? 'Stop Discovery' : 'Start Discovery',
                   style: GoogleFonts.poppins(
                     fontSize: Brand.h4Size(context),
                     fontWeight: Brand.h4Weight,
                     color: Brand.blackGrey,
                   )),
-              value: toggle,
+              value: discoveryEnabled,
               onChanged: (v) {
-                setState(() {
-                  toggle = v;
-                });
+                if(v){
+                  context.read<BluetoothViewModel>().startDiscovery();
+                }else{
+                  context.read<BluetoothViewModel>().stopDiscovery();
+                }
+
               },
             ),
           ),

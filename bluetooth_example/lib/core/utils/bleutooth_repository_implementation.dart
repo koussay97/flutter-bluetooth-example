@@ -11,13 +11,12 @@ class BluetoothRepositoryIMPL implements BluetoothRepository {
 
     return check.fold((l) => Left(l), (r) async {
       try {
-
-         bool? result;
-       if(on){
-          result= await FlutterBluetoothSerial.instance.requestEnable();
-       }else{
-         result = await FlutterBluetoothSerial.instance.requestDisable();
-       }
+        bool? result;
+        if (on) {
+          result = await FlutterBluetoothSerial.instance.requestEnable();
+        } else {
+          result = await FlutterBluetoothSerial.instance.requestDisable();
+        }
         return Right(result ?? false);
       } catch (e) {
         return Left(PermissionFailure(message: e.toString(), code: 0));
@@ -84,7 +83,7 @@ class BluetoothRepositoryIMPL implements BluetoothRepository {
 
   @override
   Future<Either<Failure, Stream<BluetoothDiscoveryResult>>>
-  scanDevices() async {
+      scanDevices() async {
     final bleInstance = FlutterBluetoothSerial.instance;
     final check = await BluetoothPermissionChecker.isAllowedToScanForDevices();
     return check.fold((l) => Left(l), (r) async {
@@ -94,9 +93,7 @@ class BluetoothRepositoryIMPL implements BluetoothRepository {
               ConnectionFailure(message: 'bluetooth is off', code: 0));
         }
 
-
         final result = bleInstance.startDiscovery().asBroadcastStream();
-
 
         return Right(result);
       } catch (e) {
@@ -110,8 +107,8 @@ class BluetoothRepositoryIMPL implements BluetoothRepository {
       {required String deviceAddress}) async {
     final check = await BluetoothPermissionChecker.isAllowedToBeDiscoverable();
 
-    return  check.fold((l) => Left(l), (r) async {
-      try{
+    return check.fold((l) => Left(l), (r) async {
+      try {
         if (!r) {
           return const Left(
               ConnectionFailure(message: 'bluetooth is off', code: 0));
@@ -119,11 +116,10 @@ class BluetoothRepositoryIMPL implements BluetoothRepository {
         final pairingResult = await FlutterBluetoothSerial.instance
             .bondDeviceAtAddress(deviceAddress);
 
-        return Right(pairingResult??false);
-      }catch(e){
+        return Right(pairingResult ?? false);
+      } catch (e) {
         return Left(PermissionFailure(message: e.toString(), code: 0));
       }
-
     });
   }
 
@@ -157,5 +153,24 @@ class BluetoothRepositoryIMPL implements BluetoothRepository {
   Future<Either<Failure, void>> closeConnection() {
     // TODO: implement closeConnection
     throw UnimplementedError();
+  }
+
+  @override
+  Future<Either<Failure, void>> stopScanningDevices() async {
+    final check = await BluetoothPermissionChecker.isAllowedToBeDiscoverable();
+    return check.fold((l) => left(l), (r) async {
+      try {
+        if (!r) {
+          return const Left(
+              ConnectionFailure(message: 'bluetooth is off', code: 0));
+        }
+        final pairingResult =
+            await FlutterBluetoothSerial.instance.cancelDiscovery();
+
+        return Right(pairingResult);
+      } catch (e) {
+        return Left(PermissionFailure(message: e.toString(), code: 0));
+      }
+    });
   }
 }

@@ -18,7 +18,8 @@ enum SystemState {
 class BluetoothViewModel extends ChangeNotifier {
   bool enableBluetooth = false;
   bool discoveryEnabled = false;
-
+  List<BluetoothDiscoveryResult> listOfDevicesDiscovered = List<BluetoothDiscoveryResult>.empty(growable: true);
+  StreamSubscription<BluetoothDiscoveryResult>? discoverySubscription;
   BluetoothRepositoryIMPL repositoryIMPL;
   late SystemState currentState;
 
@@ -29,6 +30,11 @@ class BluetoothViewModel extends ChangeNotifier {
   BluetoothViewModel({required this.repositoryIMPL}) {
     enableBluetooth = false;
     discoveryEnabled = false;
+    listOfDevicesDiscovered=List<BluetoothDiscoveryResult>.empty(growable: true);
+    if(discoverySubscription!=null){
+      discoverySubscription?.cancel();
+      discoverySubscription=null;
+    }
     currentState = SystemState.initial;
     _init.call();
     notifyListeners();
@@ -41,7 +47,7 @@ class BluetoothViewModel extends ChangeNotifier {
   Future<Either<Failure, bool>> toggleBtn() async {
     enableBluetooth = !enableBluetooth;
     notifyListeners();
-    if(enableBluetooth){
+    if (enableBluetooth) {
       return await repositoryIMPL.openBluetooth(on: true).then((result) {
         result.fold((l) {
           enableBluetooth = false;
@@ -50,7 +56,7 @@ class BluetoothViewModel extends ChangeNotifier {
 
         return result;
       });
-    }else{
+    } else {
       return await repositoryIMPL.openBluetooth(on: false).then((result) {
         result.fold((l) {
           enableBluetooth = true;
@@ -58,9 +64,7 @@ class BluetoothViewModel extends ChangeNotifier {
         }, (r) {});
         return result;
       });
-
     }
-
   }
 
   /// test stream for testing purposes
@@ -76,6 +80,7 @@ class BluetoothViewModel extends ChangeNotifier {
       await Future.delayed(Duration(seconds: i));
     }
   }
+
   /// check if we (initially)!! have bluetooth enabled + check if permission is granted
   /// if we (initially) have permission and bluetooth is disabled we will set
   /// [currentState] to [SystemState.intermediate1] and device data will not change
@@ -103,7 +108,8 @@ class BluetoothViewModel extends ChangeNotifier {
       if (bluetoothActive) {
         await getCurrentDeviceData().then((res) {
           res.fold((l) {
-            debugPrint('error from init : getCurrentDeviceData() : res.left ${l.message}');
+            debugPrint(
+                'error from init : getCurrentDeviceData() : res.left ${l.message}');
           }, (r) {
             currentState = SystemState.secondState;
             notifyListeners();
@@ -124,57 +130,85 @@ class BluetoothViewModel extends ChangeNotifier {
             name: 'UNKNOWN', address: 'UNKNOWN', isConnected: false);
 
         debugPrint('error from getCurrentDeviceData() : left ${l.message}');
-
-        }, (r) {
+      }, (r) {
+        //print('++++++++++++++');
+        //print(r);
         currentDevice = r;
         notifyListeners();
       });
       return result;
     });
   }
-/* Future<void> _setDeviceData() async {
-    /// (bluetooth is on + permission is grated)  && toggle btn is on
-    /// currentState == CustomBluetoothState.secondState
-    debugPrint('currentState ${currentState.toString()}');
-    debugPrint('toggle val $toggleValue');
-    if (currentState == CustomBluetoothState.secondState && toggleValue) {
-      await Future.wait([
-        FlutterBluetoothSerial.instance.name,
-        FlutterBluetoothSerial.instance.address,
-        FlutterBluetoothSerial.instance.isDiscoverable
-      ]).then((value) {
-        debugPrint(value.toString());
-        currentDevice.name = (value[0] as String?) ?? 'U';
-        currentDevice.address = (value[1] as String?) ?? 'U';
-        currentDevice.isDiscoverable = (value[2] as bool?) ?? false;
+
+  Future<Either<Failure, void>> stopDiscovery() async {
+    print('called stop scan ++++');
+    return repositoryIMPL.stopScanningDevices().then((value) {
+      value.fold((l) => null, (r) {
+        currentState= SystemState.secondState;
+        discoverySubscription?.cancel();
+        discoveryEnabled = false;
         notifyListeners();
       });
-    } else {
-      currentDevice.name = 'Unknown';
-      currentDevice.address = 'Unknown';
-      currentDevice.isDiscoverable = false;
-      notifyListeners();
-    }
-    debugPrint(currentDevice.toString());
-  }*/
-
-/*  Future<void> tryEnableBluetooth() async {
-    await Future.wait(
-            [Permission.bluetooth.status, Permission.bluetoothConnect.status])
-        .then((value) {
-      if (value[0].isGranted && value[1].isGranted) {
-        toggleValue = !toggleValue;
-
-        if (toggleValue) {
-          currentState = CustomBluetoothState.secondState;
-        } else {
-          currentState = CustomBluetoothState.intermediate1;
-        }
-      }
-      toggleValue = false;
-      currentState = CustomBluetoothState.initial;
-      _setDeviceData();
-      notifyListeners();
+      return value;
     });
-  }*/
+  }
+
+  Future<Either<Failure, Stream<BluetoothDiscoveryResult>>>
+      startDiscovery() async {
+    print('called start scan ++++');
+    return await repositoryIMPL.scanDevices().then((value) {
+      value.fold((l) {
+        if (discoverySubscription != null) {
+          discoveryEnabled=false;
+          discoverySubscription?.cancel();
+          currentState= SystemState.secondState;
+          discoverySubscription = null;
+          notifyListeners();
+        }
+      }, (r) {
+        discoveryEnabled = true;
+        currentState= SystemState.finalState;
+        if (discoverySubscription != null) {
+          discoverySubscription?.resume();
+          notifyListeners();
+        } else {
+          discoverySubscription = r.listen(
+              (event) {
+                final existingIndex = listOfDevicesDiscovered.indexWhere(
+                    (element) =>
+                        element.device.address == event.device.address);
+                if (existingIndex >= 0) {
+                  // here we will remove the item list if its RSSI is weak
+                  listOfDevicesDiscovered[existingIndex] = event;
+                  notifyListeners();
+                } else {
+                  listOfDevicesDiscovered.add(event);
+                  notifyListeners();
+                }
+
+              },
+              onError: (e) {
+                print(' error in subscription ${e}');
+                discoveryEnabled = false;
+                notifyListeners();
+              },
+              cancelOnError: true,
+              onDone: () {
+                discoveryEnabled = false;
+                discoverySubscription?.cancel();
+                notifyListeners();
+              });
+        }
+        notifyListeners();
+      });
+      return value;
+    });
+  }
+
+  @override
+  void dispose() {
+    discoverySubscription?.cancel();
+    discoverySubscription = null;
+    super.dispose();
+  }
 }

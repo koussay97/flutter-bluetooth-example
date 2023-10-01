@@ -1,7 +1,7 @@
 import 'package:bluetooth_example/core/brand_guideline/brand_guidline.dart';
 import 'package:bluetooth_example/core/routing/pop_screen_util.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+
 import 'package:google_fonts/google_fonts.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -20,24 +20,39 @@ Future<void> requestPermission(
                 fontSize: Brand.h3Size(context),
               )),
           onPressed: () async {
-            await [
+            final bl = await Permission.bluetooth.request();
+            final blScan = await Permission.bluetoothScan.request();
+            final blConnect = await Permission.bluetoothConnect.request();
+            //final blLocation = await Permission.locationWhenInUse.request();
+
+            if(bl.isGranted&&blScan.isGranted&&blConnect.isGranted){
+              Navigator.of(context).pop();
+            }else{
+              Navigator.of(context).pop();
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                duration: Duration(seconds: 10),
+                content: Text('permissions status:: $bl, $blScan, $blConnect'),));
+            }
+            /*await [
               Permission.bluetoothConnect,
               Permission.bluetoothScan,
-              Permission.location,
+              Permission.locationWhenInUse,
               Permission.bluetooth
-            ].request().then((value) async {
+            ].toList().request().then((value) async {
               debugPrint('permission request results from popup $value');
               if (value[Permission.bluetoothConnect]!.isGranted &&
                   value[Permission.bluetoothScan]!.isGranted &&
                   value[Permission.bluetooth]!.isGranted &&
-                  value[Permission.location]!.isGranted) {
+                  value[Permission.locationWhenInUse]!.isGranted) {
                 Navigator.of(context).pop();
               } else {
                 Navigator.of(context).pop();
-                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('permissions status:: $value'),));
+                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                   duration: Duration(seconds: 10),
+                   content: Text('permissions status:: $value'),));
                 //SystemNavigator.pop(animated: true);
               }
-            });
+            });*/
           }),
       centerIcon: Icon(Icons.bluetooth,
           color: Brand.brightTeal, size: Brand.appPadding(context: context)),
