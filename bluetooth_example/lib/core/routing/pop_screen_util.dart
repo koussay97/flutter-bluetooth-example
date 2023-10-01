@@ -11,7 +11,7 @@ Future showPopup(
       required double innerPadding,
       required String text}) async {
   return showDialog(
-      barrierDismissible: true,
+      barrierDismissible: false,
       //useSafeArea: true,
       context: context,
       builder: (_) => Dialog(

@@ -63,6 +63,7 @@ class _FooterWidgetState extends State<FooterWidget> {
 
         itemCount: listOfDevices.length,
         shrinkWrap: true,
+        padding: EdgeInsets.zero,
         itemBuilder: (context, index) {
           // if(index==null){return Container(color: Colors.red,height: 20,width: 20,);}
           return BluetoothDeviceTile(

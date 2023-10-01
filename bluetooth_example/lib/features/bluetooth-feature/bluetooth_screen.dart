@@ -2,6 +2,7 @@
 import 'package:bluetooth_example/core/brand_guideline/brand_guidline.dart';
 import 'package:bluetooth_example/features/bluetooth-feature/bloototh_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'custome-widgets/bluetooth_widgets.dart';
 
@@ -30,44 +31,38 @@ class BluetoothScreen extends StatelessWidget {
             preferredSize: Size(deviceWidth, deviceWidth * 0.14),
             child: CustomAppBar(deviceWidth: deviceWidth)),
         body: Center(
-          child: Consumer<BluetoothViewModel>(
-            builder: (BuildContext context, BluetoothViewModel instance,
-                Widget? child) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    height: Brand.appPadding(context: context),
+          child:   Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+              height: Brand.appPadding(context: context),
+            ),
+             HeaderWidget(),
+
+            Padding(
+              padding: EdgeInsets.symmetric(
+                  horizontal: Brand.appPadding(context: context),
+                  vertical: Brand.appPadding(context: context)*0.5),
+              child: const Divider(height: 2),
+            ),
+
+
+            Expanded(
+              child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: Brand.appPadding(context: context),
                   ),
-                  HeaderWidget(
-                    device: instance.currentDevice,
-                    onToggleBtn: (val) async {},
-                    enabled: instance.toggleValue,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: Brand.appPadding(context: context),
-                        vertical: Brand.appPadding(context: context)),
-                    child: const Divider(height: 2),
-                  ),
-                  Expanded(
-                    child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: Brand.appPadding(context: context),
-                        ),
-                        child: const FooterWidget()),
-                  ),
-                ],
-              );
-            },
-            //child: ,
-          ),
+                  child: const FooterWidget()),
+            ),
+          ],
+        ),
         ),
       ),
     );
   }
 }
+
 
 
 

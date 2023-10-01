@@ -4,7 +4,7 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 
 abstract interface class BluetoothRepository {
-  Future<Either<Failure, bool>> openBluetooth();
+  Future<Either<Failure, bool>> openBluetooth({required on});
 
   Future<Either<Failure, BluetoothDevice>> getDeviceData();
 

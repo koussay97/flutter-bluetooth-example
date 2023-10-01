@@ -1,20 +1,27 @@
 
 
 import 'package:bluetooth_example/core/brand_guideline/brand_guidline.dart';
+import 'package:bluetooth_example/features/bluetooth-feature/bloototh_view_model.dart';
+import 'package:bluetooth_example/features/bluetooth-feature/custome-widgets/bluetooth_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+
 
 class HeaderWidget extends StatelessWidget {
-  BluetoothDevice? device;
+  /*BluetoothDevice? device;
   bool? enabled;
-  final Function(bool) onToggleBtn;
+  final Function(bool) onToggleBtn;*/
 
-  HeaderWidget({Key? key, this.device, required this.onToggleBtn, this.enabled})
+  HeaderWidget({Key? key, /*this.device, required this.onToggleBtn, this.enabled*/})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final BluetoothDevice device = context.select<BluetoothViewModel,BluetoothDevice>((value) => value.currentDevice,);
+    final bool enabled = context.select<BluetoothViewModel,bool>((value) => value.enableBluetooth,);
+    final double deviceWidth= MediaQuery.of(context).size.width;
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -49,7 +56,14 @@ class HeaderWidget extends StatelessWidget {
                         color: Brand.blackGrey,
                       )),
                   value: enabled ?? false,
-                  onChanged: onToggleBtn,
+                  onChanged: (val){
+                    context.read<BluetoothViewModel>().toggleBtn().then((value) {
+                      value.fold((l) {
+                        requestPermission(context: context,deviceWidth: deviceWidth);
+                      }, (r) => null);
+
+                    });
+                  },
                 ),
               ),
               Card(
@@ -73,7 +87,7 @@ class HeaderWidget extends StatelessWidget {
                                 fontWeight: Brand.h4Weight,
                                 color: Colors.white,
                               )),
-                          Text(device?.name??'UNKNOWN',
+                          Text(device.name??'UNKNOWN',
                               style: GoogleFonts.poppins(
                                 fontSize: Brand.h4Size(context),
                                 fontWeight: Brand.h4Weight,
@@ -93,7 +107,7 @@ class HeaderWidget extends StatelessWidget {
                                 fontWeight: Brand.h4Weight,
                                 color: Colors.white,
                               )),
-                          Text(device?.address??"UNKNOWN",
+                          Text(device.address??"UNKNOWN",
                               style: GoogleFonts.poppins(
                                 fontSize: Brand.h4Size(context),
                                 fontWeight: Brand.h4Weight,
@@ -114,14 +128,19 @@ class HeaderWidget extends StatelessWidget {
                                 fontWeight: Brand.h4Weight,
                                 color: Colors.white,
                               )),
-                          Text('${device?.isConnected??false}',
+                          Text('${device.isConnected??false}',
                               style: GoogleFonts.poppins(
                                 fontSize: Brand.h4Size(context),
                                 fontWeight: Brand.h4Weight,
                                 color: Colors.white,
                               )),
+
                         ],
                       ),
+                      SizedBox(
+                        height: Brand.appPadding(context: context) * 0.5,
+                      ),
+                      const StartDiscoveryBtn(),
                     ]),
                   ),
                 ),

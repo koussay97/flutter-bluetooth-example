@@ -11,6 +11,7 @@ abstract class BluetoothPermissionChecker {
     final checkResults = await Future.wait([
       Permission.bluetooth.status.isGranted,
       Permission.bluetoothConnect.status.isGranted,
+
     ]);
 
     final permissionBLState = checkResults[0];

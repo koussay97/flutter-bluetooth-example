@@ -7,48 +7,63 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-/*enum CustomBluetoothState {
+enum SystemState {
   initial, // only show toggle btn
   intermediate1, // Bluetooth permissions grated but its not enabled
   secondState, // bluetooth is enabled => show device data ?
   intermediate2, // discovery failed show message
   finalState, // discovery Successful => show list of devices
-}*/
+}
 
 class BluetoothViewModel extends ChangeNotifier {
-  bool toggleValue = false;
-  BluetoothRepositoryIMPL repositoryIMPL;
-  //CustomBluetoothState? currentState;
+  bool enableBluetooth = false;
+  bool discoveryEnabled = false;
 
-  BluetoothDevice currentDevice =
-  const BluetoothDevice(name: 'UNKNOWN', address: 'UNKNOWN',isConnected: false);
+  BluetoothRepositoryIMPL repositoryIMPL;
+  late SystemState currentState;
+
+  BluetoothDevice currentDevice = const BluetoothDevice(
+      name: 'UNKNOWN', address: 'UNKNOWN', isConnected: false);
   bool loading = false;
 
   BluetoothViewModel({required this.repositoryIMPL}) {
-    toggleValue = false;
+    enableBluetooth = false;
+    discoveryEnabled = false;
+    currentState = SystemState.initial;
     _init.call();
     notifyListeners();
   }
 
-  Future<Either<Failure,bool>> toggleBtn()async{
+  /// this function will enable bluetooth
+  /// firstly the toggle btn will work, then we call the repository function
+  /// and try enabling the bluetooth, if it fails we will fall back to the
+  /// false value
+  Future<Either<Failure, bool>> toggleBtn() async {
+    enableBluetooth = !enableBluetooth;
+    notifyListeners();
+    if(enableBluetooth){
+      return await repositoryIMPL.openBluetooth(on: true).then((result) {
+        result.fold((l) {
+          enableBluetooth = false;
+          notifyListeners();
+        }, (r) {});
 
-    return await repositoryIMPL.openBluetooth().then((result) {
+        return result;
+      });
+    }else{
+      return await repositoryIMPL.openBluetooth(on: false).then((result) {
+        result.fold((l) {
+          enableBluetooth = true;
+          notifyListeners();
+        }, (r) {});
+        return result;
+      });
 
-      result.fold((l) {
-        toggleValue=false;
-        notifyListeners();
-      },
-              (r) {
-                toggleValue=!toggleValue;
-                notifyListeners();
-              });
-
-      return result;
-    });
+    }
 
   }
 
-/// test stream for testing purposes
+  /// test stream for testing purposes
   Stream<BluetoothDiscoveryResult> devicesStream() async* {
     for (int i = 0; i <= 6; i++) {
       yield BluetoothDiscoveryResult(
@@ -61,18 +76,63 @@ class BluetoothViewModel extends ChangeNotifier {
       await Future.delayed(Duration(seconds: i));
     }
   }
-
+  /// check if we (initially)!! have bluetooth enabled + check if permission is granted
+  /// if we (initially) have permission and bluetooth is disabled we will set
+  /// [currentState] to [SystemState.intermediate1] and device data will not change
+  /// else if initially we are all set we set the [currentState] to
+  /// [SystemState.secondState] and [currentDevice] to the [BluetoothDevice] that
+  /// comes from the [BluetoothRepositoryIMPL] function [repositoryIMPL.getDeviceData]
+  /// note that we are not returning anything because initialization should
+  /// not return anything, we will request permissions on user interaction
   Future<void> _init() async {
-    // check if we have bluetooth enabled + check if permission is granted
+    debugPrint('called init');
+    final results = await Future.wait([
+      Permission.bluetooth.status.isGranted,
+      Permission.bluetoothConnect.status.isGranted,
+      FlutterBluetoothSerial.instance.isEnabled,
+    ]);
 
-    // final permissionBLState = await Permission.bluetooth.status;
-    // final permissionBLConnect = await Permission.bluetoothConnect.status;
-    // final permissionBLDiscoverable = await Permission.bluetoothAdvertise.status;
-    // final permissionBLScan = await Permission.bluetoothScan.status;
+    debugPrint('check results for init$results');
 
+    final bool permissionBLState = results[0] ?? false;
+    final bool permissionBLConnect = results[1] ?? false;
+    final bool bluetoothActive = results[2] ?? false;
+    if (permissionBLConnect && permissionBLState) {
+      currentState = SystemState.intermediate1;
+      notifyListeners();
+      if (bluetoothActive) {
+        await getCurrentDeviceData().then((res) {
+          res.fold((l) {
+            debugPrint('error from init : getCurrentDeviceData() : res.left ${l.message}');
+          }, (r) {
+            currentState = SystemState.secondState;
+            notifyListeners();
+          });
+          return res;
+        });
+      }
+    } else {
+      currentState = SystemState.initial;
+      notifyListeners();
+    }
   }
 
- /* Future<void> _setDeviceData() async {
+  Future<Either<Failure, BluetoothDevice>> getCurrentDeviceData() async {
+    return await repositoryIMPL.getDeviceData().then((result) {
+      result.fold((l) {
+        currentDevice = const BluetoothDevice(
+            name: 'UNKNOWN', address: 'UNKNOWN', isConnected: false);
+
+        debugPrint('error from getCurrentDeviceData() : left ${l.message}');
+
+        }, (r) {
+        currentDevice = r;
+        notifyListeners();
+      });
+      return result;
+    });
+  }
+/* Future<void> _setDeviceData() async {
     /// (bluetooth is on + permission is grated)  && toggle btn is on
     /// currentState == CustomBluetoothState.secondState
     debugPrint('currentState ${currentState.toString()}');
@@ -118,18 +178,3 @@ class BluetoothViewModel extends ChangeNotifier {
     });
   }*/
 }
-
-/*class DeviceDataDto {
-  String name;
-  String address;
-  bool isDiscoverable;
-
-  DeviceDataDto(
-      {required this.name,
-      required this.address,
-      required this.isDiscoverable});
-
-  @override
-  toString() =>
-      'name : $name , address : $address , isDiscoverable : $isDiscoverable';
-}*/

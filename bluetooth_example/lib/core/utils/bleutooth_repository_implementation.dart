@@ -6,17 +6,18 @@ import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 
 class BluetoothRepositoryIMPL implements BluetoothRepository {
   @override
-  Future<Either<Failure, bool>> openBluetooth() async {
+  Future<Either<Failure, bool>> openBluetooth({required on}) async {
     final check = await BluetoothPermissionChecker.isAllowedToOpenBluetooth();
 
     return check.fold((l) => Left(l), (r) async {
       try {
-        /*  if (!r) {
-          return const Left(
-              ConnectionFailure(message: 'bluetooth is off', code: 0));
-        }*/
 
-        final result = await FlutterBluetoothSerial.instance.requestEnable();
+         bool? result;
+       if(on){
+          result= await FlutterBluetoothSerial.instance.requestEnable();
+       }else{
+         result = await FlutterBluetoothSerial.instance.requestDisable();
+       }
         return Right(result ?? false);
       } catch (e) {
         return Left(PermissionFailure(message: e.toString(), code: 0));
@@ -93,40 +94,9 @@ class BluetoothRepositoryIMPL implements BluetoothRepository {
               ConnectionFailure(message: 'bluetooth is off', code: 0));
         }
 
-        /// this is the list of available bluetooth devices with the signal strength
-
-        /* final Set<BluetoothDiscoveryResult> devices = {};
-        final a = BluetoothDiscoveryResult(
-            device: const BluetoothDevice(
-              name:'name',
-              address: 'aaa',
-              bondState: BluetoothBondState.bonded,
-              isConnected: false,
-              type: BluetoothDeviceType.le,
-            ),
-            rssi: 0);
-         */
 
         final result = bleInstance.startDiscovery().asBroadcastStream();
-        /*.listen(
-            hel,
-            cancelOnError: true,
-            onDone: () {
 
-            },
-            onError: (a) {});*/
-
-        /* result.drain();
-
-        final result2 =
-            bleInstance.startDiscovery().listen((event) {});
-        result2.onData((data) { });
-        result2.onError((e){
-          bleInstance.cancelDiscovery();
-        });
-        result2.onDone(() { });
-        result2.cancel();
-       */
 
         return Right(result);
       } catch (e) {
