@@ -14,15 +14,14 @@ class DeviceCard extends StatelessWidget {
 
   const DeviceCard(
       {Key? key,
-        required this.onTappedExplore,
-        required this.isCardSelected,
-        required this.onTappedConnect,
-        required this.onTappedView,
-        required this.width,
-        required this.height,
-        required this.device})
+      required this.onTappedExplore,
+      required this.isCardSelected,
+      required this.onTappedConnect,
+      required this.onTappedView,
+      required this.width,
+      required this.height,
+      required this.device})
       : super(key: key);
-
 
   @override
   Widget build(BuildContext context) {
@@ -31,12 +30,11 @@ class DeviceCard extends StatelessWidget {
       fit: StackFit.passthrough,
       children: [
         InkWell(
-
+          radius: Brand.appPadding(context: context) * 0.3,
           onTap: onTappedView,
           child: AnimatedContainer(
             curve: Curves.elasticInOut,
             duration: const Duration(milliseconds: 200),
-
             decoration: BoxDecoration(
                 color: Colors.white,
                 boxShadow: [
@@ -48,13 +46,13 @@ class DeviceCard extends StatelessWidget {
                 ],
                 borderRadius: BorderRadius.circular(
                     Brand.appPadding(context: context) * 0.3)),
-            margin:
-            EdgeInsets.only(bottom: Brand.appPadding(context: context) *0.5),
+            margin: EdgeInsets.only(
+                bottom: Brand.appPadding(context: context) * 0.5),
             padding: EdgeInsets.symmetric(
-                vertical: Brand.appPadding(context: context) *0.5,
-                horizontal: Brand.appPadding(context: context) *0.5),
+                vertical: Brand.appPadding(context: context) * 0.5,
+                horizontal: Brand.appPadding(context: context) * 0.5),
             width: width,
-            height: isCardSelected?height*2:height,
+            height: isCardSelected ? height * 2 : height,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -64,7 +62,7 @@ class DeviceCard extends StatelessWidget {
                   decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(height),
-                      boxShadow:  [
+                      boxShadow: [
                         BoxShadow(
                           color: Brand.paleGreyBlue.withOpacity(0.5),
                           blurRadius: 1,
@@ -75,7 +73,7 @@ class DeviceCard extends StatelessWidget {
                   child: LeadingIcon(
                       type: device.device.type,
                       iconColor: Brand.darkTeal,
-                      iconSize: height *0.2),
+                      iconSize: height * 0.2),
                 ),
                 //Container(),
                 SizedBox(
@@ -84,8 +82,8 @@ class DeviceCard extends StatelessWidget {
                       color: Brand.darkGreyBlue, width: 1),
                 ),
                 SizedBox(
-                  width: width*0.4,
-                  height:isCardSelected?height*2:height,
+                  width: width * 0.4,
+                  height: isCardSelected ? height * 2 : height,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -103,18 +101,27 @@ class DeviceCard extends StatelessWidget {
                       //Spacer(flex: 2),
                       Flexible(
                         fit: FlexFit.loose,
-                        flex: isCardSelected?1:0,
+                        flex: isCardSelected ? 1 : 0,
                         child: Visibility(
-                          visible: isCardSelected,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              TileButton(connectType: true,onTap: onTappedConnect,size: height*0.2),
-                              TileButton(connectType: false,onTap: onTappedExplore,size:height*0.2),
-
-                            ],)
-                        ),
+                            visible: isCardSelected,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                /// here we check if the device is already bounded or not
+                                /// if bounded we show disconnect btn
+                                /// else we show connect btn
+                                TileButton(
+                                    connectType: device.device.isBonded ? 1 : 0,
+                                    onTap: onTappedConnect,
+                                    size: height * 0.2),
+                                /// the index 2 by default would show the explore btn
+                                TileButton(
+                                    connectType: 2,
+                                    onTap: onTappedExplore,
+                                    size: height * 0.2),
+                              ],
+                            )),
                       )
                     ],
                   ),
@@ -124,8 +131,36 @@ class DeviceCard extends StatelessWidget {
           ),
         ),
         Positioned(
-          bottom:
-          width * 0.08 - (Brand.appPadding(context: context) * 0.6),
+          top: 0,
+          //width * 0.1 - (Brand.appPadding(context: context) * 0.6),
+          right: 0,
+          child: Container(
+            alignment: Alignment.center,
+            height: width * 0.08,
+            width: width * 0.08,
+            decoration: BoxDecoration(
+              color: device.device.isBonded
+                  ? Brand.brightTeal
+                  : Brand.brightGreyBlue,
+              borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(
+                      Brand.appPadding(context: context) * 0.5 -
+                          Brand.appPadding(context: context) * 0.3)),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                DeviceDataTitle(
+                    prefix: '',
+                    data: device.device.isBonded ? 'ON' : 'OFF',
+                    expands: true),
+              ],
+            ),
+          ),
+        ),
+        Positioned(
+          bottom: width * 0.08 - (Brand.appPadding(context: context) * 0.6),
           right: 0,
           child: Container(
             alignment: Alignment.center,
@@ -135,16 +170,14 @@ class DeviceCard extends StatelessWidget {
               color: Colors.yellow,
               borderRadius: BorderRadius.only(
                   bottomRight:
-                  Radius.circular(Brand.appPadding(context: context) / 2)),
+                      Radius.circular(Brand.appPadding(context: context) / 2)),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 DeviceDataTitle(
-                    prefix: '',
-                    data: device.rssi.toString(),
-                    expands: true),
+                    prefix: '', data: device.rssi.toString(), expands: true),
               ],
             ),
           ),
@@ -153,29 +186,48 @@ class DeviceCard extends StatelessWidget {
     );
   }
 }
+
 class TileButton extends StatelessWidget {
- final bool connectType;
- final double size;
+  final int connectType;
+  final double size;
   final VoidCallback onTap;
-  const TileButton({Key? key,required this.size,required this.connectType, required this.onTap}) : super(key: key);
+
+  const TileButton(
+      {Key? key,
+      required this.size,
+      required this.connectType,
+      required this.onTap})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
-            color: Brand.paleGreyBlue,
-            borderRadius: BorderRadius.circular(30)),
-        child: connectType? Icon(Icons.bluetooth_connected_rounded
-          ,color: Colors.white,size: size,): Icon(Icons.remove_red_eye
-          ,color: Colors.white,size: size),
+            color: Brand.paleGreyBlue, borderRadius: BorderRadius.circular(30)),
+        child: btnType(size: size, btnType: connectType),
       ),
     );
   }
 }
 
+Widget btnType({required int btnType, required double size}) {
+  switch (btnType) {
+    case 0:
+      return Icon(
+        Icons.bluetooth_connected_rounded,
+        color: Colors.white,
+        size: size,
+      );
+    case 1:
+      return Icon(Icons.bluetooth_disabled_outlined,
+          color: Colors.white, size: size);
+    default:
+      return Icon(Icons.remove_red_eye, color: Colors.white, size: size);
+  }
+}
 
 // in use
 class DeviceDataTitle extends StatelessWidget {
@@ -183,11 +235,11 @@ class DeviceDataTitle extends StatelessWidget {
   final String data;
   bool expands;
 
-   DeviceDataTitle(
+  DeviceDataTitle(
       {Key? key,
-        required this.expands,
-        required this.prefix,
-        required this.data})
+      required this.expands,
+      required this.prefix,
+      required this.data})
       : super(key: key);
 
   @override
@@ -214,12 +266,13 @@ class DeviceDataTitle extends StatelessWidget {
         overflow: TextOverflow.fade,
         softWrap: expands,
         textScaleFactor: 1,
-        maxLines: expands?4:1,
+        maxLines: expands ? 4 : 1,
         textAlign: TextAlign.start,
       ),
     );
   }
 }
+
 // in use
 class LeadingIcon extends StatelessWidget {
   final double iconSize;
@@ -228,9 +281,9 @@ class LeadingIcon extends StatelessWidget {
 
   const LeadingIcon(
       {Key? key,
-        required this.iconSize,
-        required this.type,
-        required this.iconColor})
+      required this.iconSize,
+      required this.type,
+      required this.iconColor})
       : super(key: key);
 
   @override
@@ -239,24 +292,24 @@ class LeadingIcon extends StatelessWidget {
       case BluetoothDeviceType.dual:
         return Center(
             child: Icon(
-              Icons.devices_other,
-              color: iconColor,
-              size: iconSize,
-            ));
+          Icons.devices_other,
+          color: iconColor,
+          size: iconSize,
+        ));
       case BluetoothDeviceType.le:
         return Center(
             child: Icon(
-              Icons.developer_board,
-              color: iconColor,
-              size: iconSize,
-            ));
+          Icons.developer_board,
+          color: iconColor,
+          size: iconSize,
+        ));
       default:
         return Center(
             child: Icon(
-              Icons.device_unknown,
-              color: iconColor,
-              size: iconSize,
-            ));
+          Icons.device_unknown,
+          color: iconColor,
+          size: iconSize,
+        ));
     }
   }
 }

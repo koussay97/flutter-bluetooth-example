@@ -1,7 +1,8 @@
 import 'package:bluetooth_example/core/brand_guideline/brand_guidline.dart';
+import 'package:bluetooth_example/core/routing/route_names.dart';
 import 'package:bluetooth_example/features/bluetooth-feature/bloototh_view_model.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:provider/provider.dart';
 
 import 'bluetooth_widgets.dart';
@@ -14,14 +15,24 @@ class FooterWidget extends StatelessWidget {
     final deviceWidth = MediaQuery.of(context).size.width;
     final currentIndex =
         context.select<BluetoothViewModel, int?>((value) => value.currentIndex);
-    final state =
-    context.select<BluetoothViewModel, SystemState>((value) => value.currentState);
+    final state = context
+        .select<BluetoothViewModel, SystemState>((value) => value.currentState);
 
-    //final discoveryList = watcher.listOfDevicesDiscovered;
-    final discoveryList = [];
+    final discoveryList =
+        context.select<BluetoothViewModel, List<BluetoothDiscoveryResult>>(
+            (value) => value.listOfDevicesDiscovered);
+
+    /// keep this for testing
+    /* final discoveryList = [
+      BluetoothDiscoveryResult(device: const BluetoothDevice(address: 'aezraz',type: BluetoothDeviceType.dual,name: 'dfssdf',))
+    ];*/
 
     if (discoveryList.isEmpty) {
-      return BluetoothStateEmptyScreen(cardHeight: deviceWidth,cardWidth: deviceWidth,state: state,);
+      return BluetoothStateEmptyScreen(
+        cardHeight: deviceWidth,
+        cardWidth: deviceWidth,
+        state: state,
+      );
     }
     return ListView.builder(
         itemCount: discoveryList.length,
@@ -32,7 +43,10 @@ class FooterWidget extends StatelessWidget {
         ),
         itemBuilder: (context, index) {
           return DeviceCard(
-            onTappedExplore: () {},
+            onTappedExplore: () {
+              Navigator.pushNamed(context, RouteAccessors.exploreName,
+                  arguments: discoveryList[index]);
+            },
             onTappedView: () {
               if (index == currentIndex) {
                 context
@@ -44,7 +58,10 @@ class FooterWidget extends StatelessWidget {
                     .setCurrentTapIndex(index: index);
               }
             },
-            onTappedConnect: () {},
+            onTappedConnect: () {
+              // we should check if the device
+              // is bounded or not and call the appropriate function
+            },
             isCardSelected: index == currentIndex,
             width: deviceWidth,
             height: deviceWidth * 0.23,
@@ -53,4 +70,3 @@ class FooterWidget extends StatelessWidget {
         });
   }
 }
-
