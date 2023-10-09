@@ -157,7 +157,7 @@ class BluetoothRepositoryIMPL implements BluetoothRepository {
 
   @override
   Future<Either<Failure, void>> stopScanningDevices() async {
-    final check = await BluetoothPermissionChecker.isAllowedToBeDiscoverable();
+    final check = await BluetoothPermissionChecker.isAllowedToScanForDevices();
     return check.fold((l) => left(l), (r) async {
       try {
         if (!r) {

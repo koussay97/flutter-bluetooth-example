@@ -54,6 +54,10 @@ abstract class Brand {
   static FontWeight inputWeight= FontWeight.w500; //(16/375) weight 500 Gotham
 
 // this text is used for any text input the ones in grey500
-
+static  BoxShadow cardShadow = BoxShadow(
+    color: paleGreyBlue.withOpacity(0.3),
+    offset: Offset.zero,
+    spreadRadius: 5,
+    blurRadius: 5);
 
 }

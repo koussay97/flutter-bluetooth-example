@@ -94,7 +94,7 @@ class HeaderWidget extends StatelessWidget {
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 textWidthBasis: TextWidthBasis.longestLine,
-                                softWrap: true,
+                                softWrap: false,
                                 device.name??'UNKNOWN',
                                 style: GoogleFonts.poppins(
                                   fontSize: Brand.h4Size(context),

@@ -18,7 +18,9 @@ enum SystemState {
 class BluetoothViewModel extends ChangeNotifier {
   bool enableBluetooth = false;
   bool discoveryEnabled = false;
-  List<BluetoothDiscoveryResult> listOfDevicesDiscovered = List<BluetoothDiscoveryResult>.empty(growable: true);
+  int? currentIndex;
+  List<BluetoothDiscoveryResult> listOfDevicesDiscovered =
+      List<BluetoothDiscoveryResult>.empty(growable: true);
   StreamSubscription<BluetoothDiscoveryResult>? discoverySubscription;
   BluetoothRepositoryIMPL repositoryIMPL;
   late SystemState currentState;
@@ -30,16 +32,22 @@ class BluetoothViewModel extends ChangeNotifier {
   BluetoothViewModel({required this.repositoryIMPL}) {
     enableBluetooth = false;
     discoveryEnabled = false;
-    listOfDevicesDiscovered=List<BluetoothDiscoveryResult>.empty(growable: true);
-    if(discoverySubscription!=null){
+    currentIndex=null;
+    listOfDevicesDiscovered =
+        List<BluetoothDiscoveryResult>.empty(growable: true);
+    if (discoverySubscription != null) {
       discoverySubscription?.cancel();
-      discoverySubscription=null;
+      discoverySubscription = null;
     }
     currentState = SystemState.initial;
     _init.call();
     notifyListeners();
   }
 
+void setCurrentTapIndex({required int? index}){
+    currentIndex=index;
+    notifyListeners();
+}
   /// this function will enable bluetooth
   /// firstly the toggle btn will work, then we call the repository function
   /// and try enabling the bluetooth, if it fails we will fall back to the
@@ -51,8 +59,16 @@ class BluetoothViewModel extends ChangeNotifier {
       return await repositoryIMPL.openBluetooth(on: true).then((result) {
         result.fold((l) {
           enableBluetooth = false;
+          if(l is PermissionFailure){
+            currentState=SystemState.initial;
+          }else{
+            currentState=SystemState.intermediate1;
+          }
           notifyListeners();
-        }, (r) {});
+        }, (r) async {
+          await getCurrentDeviceData();
+          notifyListeners();
+        });
 
         return result;
       });
@@ -61,25 +77,16 @@ class BluetoothViewModel extends ChangeNotifier {
         result.fold((l) {
           enableBluetooth = true;
           notifyListeners();
-        }, (r) {});
+        }, (r) {
+          currentState=SystemState.intermediate1;
+          notifyListeners();
+        });
         return result;
       });
     }
   }
 
-  /// test stream for testing purposes
-  Stream<BluetoothDiscoveryResult> devicesStream() async* {
-    for (int i = 0; i <= 6; i++) {
-      yield BluetoothDiscoveryResult(
-          device: BluetoothDevice(
-              address: "${i * i + 15}",
-              isConnected: false,
-              name: 'Test Device',
-              bondState: BluetoothBondState.none),
-          rssi: 20);
-      await Future.delayed(Duration(seconds: i));
-    }
-  }
+
 
   /// check if we (initially)!! have bluetooth enabled + check if permission is granted
   /// if we (initially) have permission and bluetooth is disabled we will set
@@ -128,12 +135,10 @@ class BluetoothViewModel extends ChangeNotifier {
       result.fold((l) {
         currentDevice = const BluetoothDevice(
             name: 'UNKNOWN', address: 'UNKNOWN', isConnected: false);
-
-        debugPrint('error from getCurrentDeviceData() : left ${l.message}');
       }, (r) {
-        //print('++++++++++++++');
-        //print(r);
         currentDevice = r;
+        currentState=SystemState.secondState;
+
         notifyListeners();
       });
       return result;
@@ -143,8 +148,11 @@ class BluetoothViewModel extends ChangeNotifier {
   Future<Either<Failure, void>> stopDiscovery() async {
     print('called stop scan ++++');
     return repositoryIMPL.stopScanningDevices().then((value) {
-      value.fold((l) => null, (r) {
-        currentState= SystemState.secondState;
+      value.fold((l) {
+        print('failed to stop discovery !! from vm ');
+        print(l.message);
+      }, (r) {
+        currentState = SystemState.secondState;
         discoverySubscription?.cancel();
         discoveryEnabled = false;
         notifyListeners();
@@ -155,19 +163,18 @@ class BluetoothViewModel extends ChangeNotifier {
 
   Future<Either<Failure, Stream<BluetoothDiscoveryResult>>>
       startDiscovery() async {
-    print('called start scan ++++');
     return await repositoryIMPL.scanDevices().then((value) {
       value.fold((l) {
         if (discoverySubscription != null) {
-          discoveryEnabled=false;
+          discoveryEnabled = false;
           discoverySubscription?.cancel();
-          currentState= SystemState.secondState;
+          currentState = SystemState.intermediate2;
           discoverySubscription = null;
           notifyListeners();
         }
       }, (r) {
         discoveryEnabled = true;
-        currentState= SystemState.finalState;
+        currentState = SystemState.finalState;
         if (discoverySubscription != null) {
           discoverySubscription?.resume();
           notifyListeners();
@@ -178,17 +185,14 @@ class BluetoothViewModel extends ChangeNotifier {
                     (element) =>
                         element.device.address == event.device.address);
                 if (existingIndex >= 0) {
-                  // here we will remove the item list if its RSSI is weak
                   listOfDevicesDiscovered[existingIndex] = event;
                   notifyListeners();
                 } else {
                   listOfDevicesDiscovered.add(event);
                   notifyListeners();
                 }
-
               },
               onError: (e) {
-                print(' error in subscription ${e}');
                 discoveryEnabled = false;
                 notifyListeners();
               },

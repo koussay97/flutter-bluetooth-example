@@ -67,7 +67,7 @@ abstract class BluetoothPermissionChecker {
       Permission.bluetoothAdvertise.status.isGranted,
       FlutterBluetoothSerial.instance.isEnabled
     ]);
-
+print('permissions to disable discovery !::: $checkResults');
     final bool permissionBLConnect = checkResults[0] ?? false;
     final bool permissionBLScan = checkResults[1] ?? false;
     final permissionBLDiscoverable = checkResults[2] ?? false;
