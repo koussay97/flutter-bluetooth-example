@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bluetooth_example/core/errors/failures.dart';
 import 'package:bluetooth_example/core/utils/bleutooth_repository_implementation.dart';
+import 'package:bluetooth_example/core/utils/location_repository_implementation.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
@@ -23,13 +24,14 @@ class BluetoothViewModel extends ChangeNotifier {
       List<BluetoothDiscoveryResult>.empty(growable: true);
   StreamSubscription<BluetoothDiscoveryResult>? discoverySubscription;
   BluetoothRepositoryIMPL repositoryIMPL;
+  LocationRepositoryIMPL locationRepositoryIMPL;
   late SystemState currentState;
 
   BluetoothDevice currentDevice = const BluetoothDevice(
       name: 'UNKNOWN', address: 'UNKNOWN', isConnected: false);
   bool loading = false;
 
-  BluetoothViewModel({required this.repositoryIMPL}) {
+  BluetoothViewModel({required this.repositoryIMPL, required this.locationRepositoryIMPL}) {
     enableBluetooth = false;
     discoveryEnabled = false;
     currentIndex=null;
@@ -67,6 +69,10 @@ void setCurrentTapIndex({required int? index}){
           notifyListeners();
         }, (r) async {
           await getCurrentDeviceData();
+          await locationRepositoryIMPL.turnOnLocation().then((value){
+            print('result from location :::: ${value}');
+
+          });
           notifyListeners();
         });
 
@@ -77,7 +83,8 @@ void setCurrentTapIndex({required int? index}){
         result.fold((l) {
           enableBluetooth = true;
           notifyListeners();
-        }, (r) {
+        }, (r) async {
+          await stopDiscovery();
           currentState=SystemState.intermediate1;
           notifyListeners();
         });
@@ -113,6 +120,9 @@ void setCurrentTapIndex({required int? index}){
       currentState = SystemState.intermediate1;
       notifyListeners();
       if (bluetoothActive) {
+        enableBluetooth=true;
+        await locationRepositoryIMPL.turnOnLocation();
+        notifyListeners();
         await getCurrentDeviceData().then((res) {
           res.fold((l) {
             debugPrint(
@@ -125,6 +135,7 @@ void setCurrentTapIndex({required int? index}){
         });
       }
     } else {
+      enableBluetooth=false;
       currentState = SystemState.initial;
       notifyListeners();
     }
@@ -153,8 +164,9 @@ void setCurrentTapIndex({required int? index}){
         print(l.message);
       }, (r) {
         currentState = SystemState.secondState;
-        discoverySubscription?.cancel();
+        discoverySubscription?.pause();
         discoveryEnabled = false;
+        listOfDevicesDiscovered=[];
         notifyListeners();
       });
       return value;
@@ -163,8 +175,11 @@ void setCurrentTapIndex({required int? index}){
 
   Future<Either<Failure, Stream<BluetoothDiscoveryResult>>>
       startDiscovery() async {
+
     return await repositoryIMPL.scanDevices().then((value) {
+      print('called start discovery');
       value.fold((l) {
+        print('start discovery failure ${l.message}');
         if (discoverySubscription != null) {
           discoveryEnabled = false;
           discoverySubscription?.cancel();
@@ -173,41 +188,49 @@ void setCurrentTapIndex({required int? index}){
           notifyListeners();
         }
       }, (r) {
+       // print('start discovery success ');
+
         discoveryEnabled = true;
         currentState = SystemState.finalState;
         if (discoverySubscription != null) {
+          print('resume discovery +++ ');
           discoverySubscription?.resume();
           notifyListeners();
-        } else {
-          discoverySubscription = r.listen(
-              (event) {
-                final existingIndex = listOfDevicesDiscovered.indexWhere(
-                    (element) =>
-                        element.device.address == event.device.address);
-                if (existingIndex >= 0) {
-                  listOfDevicesDiscovered[existingIndex] = event;
-                  notifyListeners();
-                } else {
-                  listOfDevicesDiscovered.add(event);
-                  notifyListeners();
-                }
-              },
-              onError: (e) {
-                discoveryEnabled = false;
-                notifyListeners();
-              },
-              cancelOnError: true,
-              onDone: () {
-                discoveryEnabled = false;
-                discoverySubscription?.cancel();
-                notifyListeners();
-              });
         }
+        discoverySubscription = r.listen(
+                (event) {
+              print('incoming device ${event.device.type}');
+              final existingIndex = listOfDevicesDiscovered.indexWhere(
+                      (element) =>
+                  element.device.address == event.device.address);
+              if (existingIndex >= 0) {
+                listOfDevicesDiscovered[existingIndex] = event;
+                notifyListeners();
+              } else {
+                listOfDevicesDiscovered.add(event);
+                notifyListeners();
+              }
+            },
+            onError: (e) {
+              discoveryEnabled = false;
+              notifyListeners();
+            },
+            cancelOnError: true,
+            onDone: () {
+              discoveryEnabled = false;
+              discoverySubscription?.cancel();
+              notifyListeners();
+            });
         notifyListeners();
       });
       return value;
     });
   }
+
+ /* Future<Either<Failure,dynamic>>setDiscoverable({required Duration duration})async{
+    final result = await repositoryIMPL.setDiscoverable(durationInSeconds: duration.inSeconds);
+
+  }*/
 
   @override
   void dispose() {

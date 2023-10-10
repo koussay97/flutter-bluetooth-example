@@ -167,6 +167,7 @@ class BluetoothRepositoryIMPL implements BluetoothRepository {
         final pairingResult =
             await FlutterBluetoothSerial.instance.cancelDiscovery();
 
+
         return Right(pairingResult);
       } catch (e) {
         return Left(PermissionFailure(message: e.toString(), code: 0));

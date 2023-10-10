@@ -153,7 +153,7 @@ class DeviceCard extends StatelessWidget {
               children: [
                 DeviceDataTitle(
                     prefix: '',
-                    data: device.device.isBonded ? 'ON' : 'OFF',
+                    data: device.device.isConnected ? 'ON' : 'OFF',
                     expands: true),
               ],
             ),
@@ -303,6 +303,13 @@ class LeadingIcon extends StatelessWidget {
           color: iconColor,
           size: iconSize,
         ));
+      case BluetoothDeviceType.le:
+        return Center(
+            child: Icon(
+              Icons.media_bluetooth_on_outlined,
+              color: iconColor,
+              size: iconSize,
+            ));
       default:
         return Center(
             child: Icon(

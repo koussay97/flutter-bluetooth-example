@@ -11,7 +11,6 @@ abstract class BluetoothPermissionChecker {
     final checkResults = await Future.wait([
       Permission.bluetooth.status.isGranted,
       Permission.bluetoothConnect.status.isGranted,
-
     ]);
 
     final permissionBLState = checkResults[0];
@@ -67,7 +66,7 @@ abstract class BluetoothPermissionChecker {
       Permission.bluetoothAdvertise.status.isGranted,
       FlutterBluetoothSerial.instance.isEnabled
     ]);
-print('permissions to disable discovery !::: $checkResults');
+    print('permissions to disable discovery !::: $checkResults');
     final bool permissionBLConnect = checkResults[0] ?? false;
     final bool permissionBLScan = checkResults[1] ?? false;
     final permissionBLDiscoverable = checkResults[2] ?? false;
@@ -148,7 +147,19 @@ print('permissions to disable discovery !::: $checkResults');
     return Future.value(const Left(PermissionFailure(
         message: 'we request permission to scan devices', code: 0)));
   }
+
+  static Future<Either<PermissionFailure, bool>>
+      isAllowedToOpenLocation() async {
+    final checkResults = await Future.wait([
+      Permission.location.isGranted,
+      Permission.locationWhenInUse.isGranted,
+    ]);
+    final bool permissionLocation = checkResults[0];
+    final bool permissionLocationWhenInUse = checkResults[1];
+    if (permissionLocation && permissionLocationWhenInUse) {
+      return Future.value(const Right(true));
+    }
+    return Future.value(const Left(PermissionFailure(
+        message: 'we request location permission ', code: 22)));
+  }
 }
-
-
-

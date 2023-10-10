@@ -128,22 +128,22 @@ final BluetoothDiscoveryResult device;
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            ExploreCardContent(data: device.device.name,title: 'NAME'),
+            ExploreCardContent(blocWidth: height*1.5,data: device.device.name,title: 'NAME'),
             const VerticalDivider(color: Colors.white,width: 0,thickness: 1.0,),
-            ExploreCardContent(data: device.device.address,title: 'ADDRESS'),
+            ExploreCardContent(blocWidth: height*1.5,data: device.device.address,title: 'ADDRESS'),
             const VerticalDivider(color: Colors.white,width: 0,thickness: 1.0,),
-            ExploreCardContent(data: device.rssi.toString(),title: 'SIGNAL'),
+            ExploreCardContent(blocWidth: height*0.5,data: device.rssi.toString(),title: 'SIG'),
 
           ]):
       Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          ExploreCardContent(data: device.device.bondState.stringValue,title: 'STATE'),
+          ExploreCardContent(blocWidth: height*1,data: device.device.bondState.stringValue,title: 'STATE'),
           const VerticalDivider(color: Colors.white,width: 0,thickness: 1.0,),
-          ExploreCardContent(data: device.device.isConnected.toString(),title: 'CONNECTED'),
+          ExploreCardContent(blocWidth: height*1.5,data: device.device.isConnected.toString(),title: 'CONNECTED'),
           const VerticalDivider(color: Colors.white,width: 0,thickness: 1.0,),
-          ExploreCardContent(data: device.device.type.stringValue,title: 'TYPE'),
+          ExploreCardContent(blocWidth: height*1,data: device.device.type.stringValue,title: 'TYPE'),
 
         ],)
       ,
@@ -153,30 +153,46 @@ final BluetoothDiscoveryResult device;
 class ExploreCardContent extends StatelessWidget {
   final String title;
   final String? data;
-  const ExploreCardContent({Key? key, required this.data, required this.title}) : super(key: key);
+  final double blocWidth;
+  const ExploreCardContent({Key? key,required this.blocWidth, required this.data, required this.title}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return  Column(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        Text(
-          title,
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontSize: Brand.h3Size(context),
-            fontWeight: Brand.h1Weight,
+    return  SizedBox(
+      width: blocWidth,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Text(
+              maxLines: 2,
+              softWrap: true,
+              overflow: TextOverflow.fade,
+              title,
+              style: GoogleFonts.poppins(
+                color: Colors.white,
+                fontSize: Brand.h3Size(context),
+                fontWeight: Brand.h1Weight,
+              ),
+            ),
           ),
-        ),
-        Text(
-          '$data',
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontSize: Brand.textSize(context),
-            fontWeight: Brand.h3Weight,
+          Expanded(
+            child:Text(
+              '$data',
+              maxLines: 2,
+              softWrap: true,
+              overflow: TextOverflow.fade,
+              style: GoogleFonts.poppins(
+                color: Colors.white,
+                fontSize: Brand.textSize(context)*0.8,
+                fontWeight: Brand.h3Weight,
+              ),
+            ),
           ),
-        ),
-      ],
+
+        ],
+      ),
     );
   }
 }

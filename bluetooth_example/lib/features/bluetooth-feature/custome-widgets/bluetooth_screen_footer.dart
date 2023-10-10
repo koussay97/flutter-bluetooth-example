@@ -19,9 +19,8 @@ class FooterWidget extends StatelessWidget {
         .select<BluetoothViewModel, SystemState>((value) => value.currentState);
 
     final discoveryList =
-        context.select<BluetoothViewModel, List<BluetoothDiscoveryResult>>(
-            (value) => value.listOfDevicesDiscovered);
-
+        context.watch<BluetoothViewModel>().listOfDevicesDiscovered;
+   print('current list from provider ${discoveryList.length}');
     /// keep this for testing
     /* final discoveryList = [
       BluetoothDiscoveryResult(device: const BluetoothDevice(address: 'aezraz',type: BluetoothDeviceType.dual,name: 'dfssdf',))
