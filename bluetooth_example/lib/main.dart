@@ -4,6 +4,7 @@ import 'package:bluetooth_example/core/utils/bleutooth_repository_implementation
 import 'package:bluetooth_example/core/utils/location_repository_implementation.dart';
 import 'package:bluetooth_example/core/utils/scroll_behavior.dart';
 import 'package:bluetooth_example/features/bluetooth-feature/bloototh_view_model.dart';
+import 'package:bluetooth_example/features/esp32-command-screen/page_scroll_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -11,6 +12,11 @@ import 'package:provider/provider.dart';
 void main() {
   runApp( MultiProvider(
       providers: [
+       ChangeNotifierProvider<PageScrollViewModel>(create: (_){
+         final vm = PageScrollViewModel();
+         vm.init();
+         return vm;
+       }),
         ChangeNotifierProvider<BluetoothViewModel>(create: (_)=>BluetoothViewModel(
             locationRepositoryIMPL: LocationRepositoryIMPL(),
             repositoryIMPL: BluetoothRepositoryIMPL()))

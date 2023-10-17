@@ -1,7 +1,10 @@
 import 'package:bluetooth_example/core/brand_guideline/brand_guidline.dart';
+import 'package:bluetooth_example/core/routing/route_names.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import 'custome-widgets/bluetooth_widgets.dart';
 
 class DeviceExploreScreen extends StatelessWidget {
   const DeviceExploreScreen({Key? key}) : super(key: key);
@@ -50,7 +53,7 @@ class DeviceExploreScreen extends StatelessWidget {
               ),
               Text(
                 'From this panel, you van view the device interface and connect to it or disconnect.'
-                    ' This screen is intended to give you more in-depth insight about each scanned device.',
+                ' This screen is intended to give you more in-depth insight about each scanned device.',
                 style: GoogleFonts.poppins(
                   color: Brand.lightGrey,
                   fontSize: Brand.textSize(context),
@@ -60,40 +63,51 @@ class DeviceExploreScreen extends StatelessWidget {
               SizedBox(
                 height: deviceWidth * 0.1,
               ),
-              DeviceExploreDataCard(device: device,height: deviceWidth * 0.2,type: 0),
+              DeviceExploreDataCard(
+                  device: device, height: deviceWidth * 0.2, type: 0),
               SizedBox(
                 height: deviceWidth * 0.1,
               ),
-              DeviceExploreDataCard(device: device,height: deviceWidth * 0.2,type: 1),
+              DeviceExploreDataCard(
+                  device: device, height: deviceWidth * 0.2, type: 1),
               SizedBox(
                 height: deviceWidth * 0.1,
               ),
               Text(
-                    'Click the Button to attempt connection or bound the two devices ',
+                'Click the Button to attempt connection or bound the two devices ',
                 style: GoogleFonts.poppins(
                   color: Brand.blackGrey,
                   fontSize: Brand.textSize(context),
                   fontWeight: Brand.textWeight,
                 ),
               ),
+              //Spacer(),
               SizedBox(
-                height: deviceWidth * 0.1,
+                height: deviceWidth * 0.25,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  MaterialButton(
-                    shape: BeveledRectangleBorder(
-                        //side: BorderSide.merge(Border.symmetric(), b),
-                        borderRadius: BorderRadius.circular(2)),
-                    color: Brand.darkTeal,
-                      child: Text('Connect',  style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: Brand.h3Size(context),
-                        fontWeight: Brand.h3Weight,
-                      ),),
-                      onPressed: (){}),
-                ],
+              Center(
+                  child: ActionButton(
+                      onTap: () {
+                        if(device.device.isBonded){
+                          Navigator.pushNamed(context, RouteAccessors.dashboardName,arguments: device.device);
+                        }else{
+                          Navigator.pushNamed(context, RouteAccessors.dashboardName,arguments: device.device);
+
+                        }
+
+                      }, isConnectable: device.device.isBonded)),
+              SizedBox(
+                height: deviceWidth * 0.05,
+              ),
+              Center(
+                child: Text(
+                  'This device is currently ${device.device.bondState.stringValue}',
+                  style: GoogleFonts.poppins(
+                    color: Brand.blackGrey,
+                    fontSize: Brand.textSize(context),
+                    fontWeight: Brand.textWeight,
+                  ),
+                ),
               )
             ],
           ),
@@ -103,96 +117,32 @@ class DeviceExploreScreen extends StatelessWidget {
   }
 }
 
-class DeviceExploreDataCard extends StatelessWidget {
-  final int type;
-  final double height;
-final BluetoothDiscoveryResult device;
-  const DeviceExploreDataCard({Key? key,required this.type,required this.device, required this.height})
+class ActionButton extends StatelessWidget {
+  final VoidCallback onTap;
+  final bool isConnectable;
+
+  const ActionButton(
+      {Key? key, required this.onTap, required this.isConnectable})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: Brand.appPadding(context: context)*0.5,
-      vertical: Brand.appPadding(context: context)*0.1,
-      ),
-      height: height,
-      width: double.infinity,
-
-      decoration: BoxDecoration(
-          color: type==0?Brand.darkBlue:Brand.paleGreyBlue,
-        borderRadius: BorderRadius.circular(Brand.appPadding(context: context)*0.5),
-
-      ),
-      child: type==0?Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            ExploreCardContent(blocWidth: height*1.5,data: device.device.name,title: 'NAME'),
-            const VerticalDivider(color: Colors.white,width: 0,thickness: 1.0,),
-            ExploreCardContent(blocWidth: height*1.5,data: device.device.address,title: 'ADDRESS'),
-            const VerticalDivider(color: Colors.white,width: 0,thickness: 1.0,),
-            ExploreCardContent(blocWidth: height*0.5,data: device.rssi.toString(),title: 'SIG'),
-
-          ]):
-      Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          ExploreCardContent(blocWidth: height*1,data: device.device.bondState.stringValue,title: 'STATE'),
-          const VerticalDivider(color: Colors.white,width: 0,thickness: 1.0,),
-          ExploreCardContent(blocWidth: height*1.5,data: device.device.isConnected.toString(),title: 'CONNECTED'),
-          const VerticalDivider(color: Colors.white,width: 0,thickness: 1.0,),
-          ExploreCardContent(blocWidth: height*1,data: device.device.type.stringValue,title: 'TYPE'),
-
-        ],)
-      ,
-    );
-  }
-}
-class ExploreCardContent extends StatelessWidget {
-  final String title;
-  final String? data;
-  final double blocWidth;
-  const ExploreCardContent({Key? key,required this.blocWidth, required this.data, required this.title}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return  SizedBox(
-      width: blocWidth,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Expanded(
-            child: Text(
-              maxLines: 2,
-              softWrap: true,
-              overflow: TextOverflow.fade,
-              title,
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontSize: Brand.h3Size(context),
-                fontWeight: Brand.h1Weight,
-              ),
-            ),
+    double deviceWidth = MediaQuery.of(context).size.width;
+    return MaterialButton(
+        color: isConnectable ? Brand.darkTeal : Brand.darkGreyBlue,
+        elevation: 0,
+        minWidth: deviceWidth,
+        padding: EdgeInsets.symmetric(
+          vertical: Brand.appPadding(context: context) * 0.5,
+        ),
+        onPressed: onTap,
+        child: Text(
+          isConnectable ? 'Connect' : 'Pair',
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontSize: Brand.h3Size(context),
+            fontWeight: Brand.h3Weight,
           ),
-          Expanded(
-            child:Text(
-              '$data',
-              maxLines: 2,
-              softWrap: true,
-              overflow: TextOverflow.fade,
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontSize: Brand.textSize(context)*0.8,
-                fontWeight: Brand.h3Weight,
-              ),
-            ),
-          ),
-
-        ],
-      ),
-    );
+        ));
   }
 }

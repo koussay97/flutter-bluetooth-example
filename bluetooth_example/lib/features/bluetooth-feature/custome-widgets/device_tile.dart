@@ -130,14 +130,22 @@ class DeviceCard extends StatelessWidget {
             ),
           ),
         ),
+        /*Positioned(
+            top: 0,
+            left: 0,
+            child: Container(
+          height: height,
+              width: width*0.03,
+              color: Colors.redAccent,
+        )),*/
         Positioned(
           top: 0,
           //width * 0.1 - (Brand.appPadding(context: context) * 0.6),
           right: 0,
           child: Container(
             alignment: Alignment.center,
-            height: width * 0.08,
-            width: width * 0.08,
+            height: width * 0.05,
+            width: width * 0.3,
             decoration: BoxDecoration(
               color: device.device.isBonded
                   ? Brand.brightTeal
@@ -153,7 +161,7 @@ class DeviceCard extends StatelessWidget {
               children: [
                 DeviceDataTitle(
                     prefix: '',
-                    data: device.device.isConnected ? 'ON' : 'OFF',
+                    data: device.device.isConnected ? 'Connected' : 'Not Connected',
                     expands: true),
               ],
             ),
@@ -255,7 +263,7 @@ class DeviceDataTitle extends StatelessWidget {
                 style: GoogleFonts.poppins(
                     fontWeight: Brand.h3Weight,
                     color: Brand.darkGreyBlue,
-                    fontSize: Brand.textSize(context))),
+                    fontSize: Brand.textSize(context)*0.8)),
           ],
           text: prefix,
           style: GoogleFonts.poppins(
