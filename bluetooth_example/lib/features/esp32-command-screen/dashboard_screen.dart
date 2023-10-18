@@ -4,6 +4,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:icons_plus/icons_plus.dart';
 import 'package:provider/provider.dart';
 
 class DashboardScreen extends StatelessWidget {
@@ -32,83 +33,321 @@ class DashboardScreen extends StatelessWidget {
                 fontWeight: Brand.h3Weight),
           )),
       body: Stack(
-        clipBehavior: Clip.none,
+        alignment: Alignment.center,
         children: [
-          Positioned(
-            top: 0,
-            left: 0,
+          GestureDetector(
+            onPanUpdate: (details) {
+              if (details.delta.dy < 0) {
+                print('should scroll downwards ');
+              }
+            },
             child: SingleChildScrollView(
-              physics: const NeverScrollableScrollPhysics(),
               scrollDirection: Axis.vertical,
-              child: Container(
-                //color: Colors.grey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      height: 400,
-                      width: deviceWidth,
-                      //color: Colors.redAccent,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          alignment: Alignment((pageScroll) * 0.0005, 0),
-                          fit: BoxFit.cover,
-                          opacity: 0.9,
-                          image: const NetworkImage(
-                              'https://d3mxt5v3yxgcsr.cloudfront.net/courses/10688/course_10688_image.jpg'),
+              clipBehavior: Clip.none,
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    height: deviceWidth,
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Positioned(
+                          top: 0,
+                          left: 0,
+                          child: SingleChildScrollView(
+                            physics: const NeverScrollableScrollPhysics(),
+                            scrollDirection: Axis.vertical,
+                            child: Container(
+                              //color: Colors.grey,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    height: 400,
+                                    width: deviceWidth,
+                                    //color: Colors.redAccent,
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        alignment:
+                                            Alignment((pageScroll) * 0.0005, 0),
+                                        fit: BoxFit.cover,
+                                        opacity: 0.9,
+                                        image: const NetworkImage(
+                                            'https://d3mxt5v3yxgcsr.cloudfront.net/courses/10688/course_10688_image.jpg'),
+                                      ),
+                                      //color: Colors.blue
+                                    ),
+                                    child: Container(
+                                      height: 200,
+                                      decoration: const BoxDecoration(
+                                          gradient: LinearGradient(
+                                              begin: Alignment.bottomCenter,
+                                              end: Alignment.topCenter,
+                                              colors: [
+                                            Colors.white,
+                                            Colors.transparent
+                                          ],
+                                              stops: [
+                                            0,
+                                            0.6
+                                          ])),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
                         ),
-                        //color: Colors.blue
-                      ),
-                      child: Container(
-                        height: 200,
-                        decoration: const BoxDecoration(
-                            gradient: LinearGradient(
-                                begin: Alignment.bottomCenter,
-                                end: Alignment.topCenter,
-                                colors: [Colors.white, Colors.transparent],
-                                stops: [0, 0.6])),
-                      ),
-                    )
-                  ],
-                ),
+                        Positioned(
+                            top: deviceWidth * 0.06,
+                            left: Brand.appPadding(context: context),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Charts',
+                                  style: GoogleFonts.poppins(
+                                      color: Colors.white,
+                                      fontSize: Brand.h2Size(context),
+                                      fontWeight: Brand.h1Weight),
+                                ),
+                                SizedBox(height: deviceWidth * 0.01),
+                                Text(
+                                  'Swipe or click to expand the chart panel',
+                                  style: GoogleFonts.poppins(
+                                      color: Colors.white,
+                                      fontSize: Brand.h4Size(context),
+                                      fontWeight: Brand.h4Weight),
+                                ),
+                              ],
+                            )),
+                        Positioned(
+                          right: 0,
+                          top: deviceWidth * 0.25,
+                          child: DataStream(
+                            listHeight: deviceWidth * 0.95,
+                            listWidth: deviceWidth,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: Brand.appPadding(context: context),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: deviceWidth * 0.2,
+                        ),
+                        Text(
+                          'Real Time Data',
+                          style: GoogleFonts.poppins(
+                              color: Brand.blackGrey,
+                              fontSize: Brand.h2Size(context),
+                              fontWeight: Brand.h1Weight),
+                        ),
+                        SizedBox(height: deviceWidth * 0.02),
+                        RealTimeDataCard(
+                          width: deviceWidth,
+                          height: deviceWidth * 0.2,
+                          title: 'Temperature',
+                          chartTitle: '22°C',
+                          chartValue: 66,
+                          leadingIcon: FontAwesome.temperature_high,
+                        ),
+                        SizedBox(
+                          height: deviceWidth * 0.05,
+                        ),
+                        RealTimeDataCard(
+                          width: deviceWidth,
+                          height: deviceWidth * 0.2,
+                          title: 'Humidity',
+                          chartTitle: '20%',
+                          chartValue: 20.0,
+                          leadingIcon: FontAwesome.cloud_showers_water,
+                        ),
+                        SizedBox(
+                          height: deviceWidth * 0.05,
+                        ),
+                        RealTimeDataCard(
+                          width: deviceWidth,
+                          height: deviceWidth * 0.2,
+                          title: 'PH,hPa',
+                          chartTitle: '1100 hpa',
+                          chartValue: 85,
+                          leadingIcon: FontAwesome.face_tired,
+                        ),
+                        SizedBox(
+                          height: deviceWidth * 0.2,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
           Positioned(
-              top: deviceWidth * 0.06,
-              left: Brand.appPadding(context: context),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Charts',
-                    style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: Brand.h2Size(context),
-                        fontWeight: Brand.h1Weight),
-                  ),
-                  SizedBox(height: deviceWidth*0.01),
-                  Text(
-                    'Swipe or click to expand the chart panel',
-                    style: GoogleFonts.poppins(
-                        color : Colors.white,
-                        fontSize: Brand.h4Size(context),
-                        fontWeight: Brand.h4Weight),
-                  ),
-                ],
-              )),
-          Positioned(
-            right: 0,
-            top: deviceWidth * 0.25,
-            child: DataStream(
-              listHeight: deviceWidth*0.95,
-              listWidth: deviceWidth,
-            ),
-          ),
+              bottom: 0,
+              width: deviceWidth,
+              child: InkWell(
+                  onTap: () {
+                    showModalBottomSheet(
+                        constraints: BoxConstraints(
+                            minWidth: deviceWidth,
+                            minHeight: deviceWidth * 0.1,
+                            maxWidth: deviceWidth,
+                            maxHeight: deviceWidth),
+                        context: context,
+                        builder: (context) {
+                          return Padding(
+                            padding: EdgeInsets.all(
+                                Brand.appPadding(context: context)),
+                            child: Column(
+                              children: [
+                                Container(
+                                  color: Colors.grey,
+                                  height: 20,
+                                  width: deviceWidth,
+                                )
+                              ],
+                            ),
+                          );
+                        });
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Brand.darkTeal,
+                        borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(
+                                Brand.appPadding(context: context) * 4),
+                            topLeft: Radius.circular(
+                                Brand.appPadding(context: context) * 4))),
+                    height: deviceWidth * 0.1,
+                    width: deviceWidth,
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.arrow_circle_up_outlined,
+                            color: Colors.white,
+                          ),
+                          Text(
+                            'Send Data',
+                            style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: Brand.h4Size(context),
+                                fontWeight: Brand.h4Weight),
+                          )
+                        ],
+                      ),
+                      /* AnimatedIcon(
+                     progress: Tween<double>(begin: 0.0,end :1.0).animate(),
+                     icon: AnimatedIcons.arrow_menu,
+                   ),
+                  */
+                    ),
+                  ))),
         ],
       ),
     );
+  }
+}
+
+class RealTimeDataCard extends StatelessWidget {
+  final String title;
+  final IconData leadingIcon;
+  final String chartTitle;
+  final double chartValue;
+  final double height;
+  final double width;
+
+  const RealTimeDataCard({
+    Key? key,
+    required this.title,
+    required this.chartTitle,
+    required this.chartValue,
+    required this.leadingIcon,
+    required this.width,
+    required this.height,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        height: height,
+        width: width,
+        decoration: BoxDecoration(
+            color: Brand.paleGreyBlue.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(
+                Brand.appPadding(context: context) * 0.5)),
+        padding: EdgeInsets.symmetric(
+            horizontal: Brand.appPadding(context: context) * 0.5),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Icon(
+              leadingIcon,
+              size: Brand.textSize(context) * 2,
+              color: chartValue < 85
+                  ? chartValue > 65
+                      ? Colors.orangeAccent
+                      : Brand.darkTeal
+                  : Colors.redAccent,
+            ),
+            Text(
+              title,
+              style: GoogleFonts.poppins(
+                  color: Brand.blackGrey,
+                  fontSize: Brand.h3Size(context),
+                  fontWeight: Brand.h3Weight),
+            ),
+            SizedBox(
+              height: height,
+              width: height,
+              child: PieChart(
+                PieChartData(
+                    startDegreeOffset: -90.0,
+                    borderData: FlBorderData(
+                        border: const Border.symmetric(
+                            horizontal: BorderSide(
+                          color: Colors.white,
+                          width: 1,
+                        )),
+                        show: true),
+                    centerSpaceColor: Brand.brightGreyBlue,
+                    pieTouchData: PieTouchData(
+                        enabled: true,
+                        longPressDuration: const Duration(milliseconds: 200)),
+                    sections: [
+                      PieChartSectionData(
+                          color: chartValue < 85
+                              ? chartValue > 65
+                                  ? Colors.orangeAccent
+                                  : Brand.darkGreyBlue
+                              : Colors.redAccent,
+                          value: chartValue,
+                          title: chartTitle,
+                          titleStyle: TextStyle(
+                              color: Colors.white,
+                              fontSize: Brand.textSize(context) * 0.8)),
+                      PieChartSectionData(
+                          showTitle: false,
+                          color: Brand.darkTeal,
+                          value: 100 - chartValue),
+                    ]),
+              ),
+            ),
+          ],
+        ));
   }
 }
 
@@ -198,7 +437,8 @@ class _DataStreamState extends State<DataStream> {
           itemBuilder: (context, position) {
             return Container(
               //width: widget.listWidth,
-              color: Colors.blue.withOpacity(0.3),
+
+              //color: Colors.blue.withOpacity(0.3),
               clipBehavior: Clip.none,
               //alignment: Alignment.center,
               padding: EdgeInsets.zero,
@@ -386,7 +626,7 @@ class _PageContentState extends State<PageContent>
       },
       child: Container(
         width: deviceWidth * 0.6,
-        color: Colors.blue.withOpacity(0.3),
+        //color: Colors.blue.withOpacity(0.3),
         child: Stack(
           clipBehavior: Clip.hardEdge,
           alignment: Alignment.center,
@@ -405,13 +645,18 @@ class _PageContentState extends State<PageContent>
                       borderRadius: BorderRadius.circular(
                           Brand.appPadding(context: context)),
                       color: Brand.darkTeal,
-
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        Icon(Icons.remove_red_eye,color: Colors.white,),
-                        Icon(Icons.person,color: Colors.white,),
+                        Icon(
+                          Icons.remove_red_eye,
+                          color: Colors.white,
+                        ),
+                        Icon(
+                          Icons.person,
+                          color: Colors.white,
+                        ),
                       ],
                     ),
                   ),
