@@ -14,7 +14,7 @@ class DashboardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final pageScroll =
         context.select<PageScrollViewModel, double>((val) => val.scrollOffset);
-    print('scroll from provider ::: $pageScroll');
+    //print('scroll from provider ::: $pageScroll');
     final device =
         ModalRoute.of(context)?.settings.arguments as BluetoothDevice;
     final deviceWidth = MediaQuery.of(context).size.width;

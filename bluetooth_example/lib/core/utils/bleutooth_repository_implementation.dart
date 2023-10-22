@@ -114,7 +114,7 @@ class BluetoothRepositoryIMPL implements BluetoothRepository {
               ConnectionFailure(message: 'bluetooth is off', code: 0));
         }
         final pairingResult = await FlutterBluetoothSerial.instance
-            .bondDeviceAtAddress(deviceAddress);
+            .bondDeviceAtAddress(deviceAddress,);
 
         return Right(pairingResult ?? false);
       } catch (e) {
@@ -169,6 +169,25 @@ class BluetoothRepositoryIMPL implements BluetoothRepository {
 
 
         return Right(pairingResult);
+      } catch (e) {
+        return Left(PermissionFailure(message: e.toString(), code: 0));
+      }
+    });
+  }
+
+  @override
+  Future<Either<Failure, BluetoothConnection>> connectToDevice({required String deviceAddress}) async{
+    final check = await BluetoothPermissionChecker.isAllowedToBeDiscoverable();
+
+    return check.fold((l) => Left(l), (r) async {
+      try {
+        if (!r) {
+          return const Left(
+              ConnectionFailure(message: 'bluetooth is off', code: 0));
+        }
+        final connectionResult = await BluetoothConnection.toAddress(deviceAddress);
+
+        return Right(connectionResult);
       } catch (e) {
         return Left(PermissionFailure(message: e.toString(), code: 0));
       }

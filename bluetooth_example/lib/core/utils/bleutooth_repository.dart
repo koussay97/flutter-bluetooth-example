@@ -27,4 +27,6 @@ abstract interface class BluetoothRepository {
       {required String address});
 
   Future<Either<Failure, void>> closeConnection();
+
+  Future<Either<Failure, BluetoothConnection>> connectToDevice({required String deviceAddress});
 }

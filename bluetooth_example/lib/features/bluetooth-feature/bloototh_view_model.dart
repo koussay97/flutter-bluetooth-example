@@ -20,8 +20,14 @@ class BluetoothViewModel extends ChangeNotifier {
   bool enableBluetooth = false;
   bool discoveryEnabled = false;
   int? currentIndex;
+
   List<BluetoothDiscoveryResult> listOfDevicesDiscovered =
       List<BluetoothDiscoveryResult>.empty(growable: true);
+
+  List<BluetoothConnection> listOfDevicesConnected =
+  List<BluetoothConnection>.empty(growable: true);
+
+
   StreamSubscription<BluetoothDiscoveryResult>? discoverySubscription;
   BluetoothRepositoryIMPL repositoryIMPL;
   LocationRepositoryIMPL locationRepositoryIMPL;
@@ -227,11 +233,28 @@ void setCurrentTapIndex({required int? index}){
     });
   }
 
- /* Future<Either<Failure,dynamic>>setDiscoverable({required Duration duration})async{
+  /*Future<Either<Failure,dynamic>>setDiscoverable({required Duration duration})async{
     final result = await repositoryIMPL.setDiscoverable(durationInSeconds: duration.inSeconds);
-
   }*/
 
+  Future<Either<Failure,bool>>pairDevice({required String deviceAddress})async{
+    final result = await repositoryIMPL.pairDevice(deviceAddress: deviceAddress);
+    // result.fold((l) => null, (r) => null);
+    return result;
+  }
+  Future<Either<Failure,BluetoothConnection>>connectDevice({required String deviceAddress})async{
+    return  await repositoryIMPL.connectToDevice(deviceAddress: deviceAddress).then((result) {
+      result.fold((l) {
+       // listOfDevicesConnected.removeWhere((element) => element.id)
+
+      }, (r) {
+
+
+      });
+      return result;
+    });
+
+  }
   @override
   void dispose() {
     discoverySubscription?.cancel();
