@@ -110,6 +110,7 @@ class DeviceExploreScreen extends StatelessWidget {
                                   centerIcon: const Icon(BoxIcons.bx_bluetooth,color: Brand.darkTeal,),
                                   innerPadding: Brand.appPadding(context: context)*0.5,
                                   text: 'your attempt to connect to device : ${device.device.name} failed, please try again');
+                             // Navigator.pushNamed(context, RouteAccessors.dashboardName,arguments: device.device);
                             }, (r) {
                               Navigator.pushNamed(context, RouteAccessors.dashboardName,arguments: device.device);
                             });

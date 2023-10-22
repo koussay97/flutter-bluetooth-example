@@ -113,8 +113,10 @@ class BluetoothRepositoryIMPL implements BluetoothRepository {
           return const Left(
               ConnectionFailure(message: 'bluetooth is off', code: 0));
         }
-        final pairingResult = await FlutterBluetoothSerial.instance
-            .bondDeviceAtAddress(deviceAddress,);
+        final pairingResult =
+            await FlutterBluetoothSerial.instance.bondDeviceAtAddress(
+          deviceAddress,
+        );
 
         return Right(pairingResult ?? false);
       } catch (e) {
@@ -150,9 +152,13 @@ class BluetoothRepositoryIMPL implements BluetoothRepository {
   }
 
   @override
-  Future<Either<Failure, void>> closeConnection() {
-    // TODO: implement closeConnection
-    throw UnimplementedError();
+  Future<Either<Failure, void>> closeConnection() async{
+/*    final check = await BluetoothPermissionChecker.isAllowedToScanForDevices();
+return check.fold((l) =>Left(l), (r) {
+  FlutterBluetoothSerial.instance.
+
+});*/
+  throw UnimplementedError();
   }
 
   @override
@@ -167,7 +173,6 @@ class BluetoothRepositoryIMPL implements BluetoothRepository {
         final pairingResult =
             await FlutterBluetoothSerial.instance.cancelDiscovery();
 
-
         return Right(pairingResult);
       } catch (e) {
         return Left(PermissionFailure(message: e.toString(), code: 0));
@@ -176,19 +181,43 @@ class BluetoothRepositoryIMPL implements BluetoothRepository {
   }
 
   @override
-  Future<Either<Failure, BluetoothConnection>> connectToDevice({required String deviceAddress}) async{
+  Future<Either<Failure, BluetoothConnection>> connectToDevice(
+      {required String deviceAddress}) async {
     final check = await BluetoothPermissionChecker.isAllowedToBeDiscoverable();
+    print('ble repos :: trying to connect to this address $deviceAddress');
+    return check.fold((l) {
+      print('ble repos ::permission exception ${l.message}');
 
-    return check.fold((l) => Left(l), (r) async {
+      return Left(l);
+    }, (r) async {
       try {
         if (!r) {
+          print('ble repos ::bluetooth off');
           return const Left(
               ConnectionFailure(message: 'bluetooth is off', code: 0));
         }
-        final connectionResult = await BluetoothConnection.toAddress(deviceAddress);
+
+        /*
+        final device = await FlutterBluetoothSerial.instance.getBondedDevices().then((value) {
+          final device =  value.firstWhere((element) => element.address==deviceAddress,orElse: (){
+
+            return const BluetoothDevice(address: ' no device');
+          });
+          print('is the device already bounded ? ${device.address} ${device.name}');
+          return device;
+        });
+        */
+
+        // 1- check if tge current address is associated with an already connected device
+
+
+        final connectionResult =
+            await BluetoothConnection.toAddress(deviceAddress);
 
         return Right(connectionResult);
       } catch (e) {
+        print('ble repos ::other exception $e');
+
         return Left(PermissionFailure(message: e.toString(), code: 0));
       }
     });

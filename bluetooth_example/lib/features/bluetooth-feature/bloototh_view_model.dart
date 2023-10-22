@@ -233,23 +233,29 @@ void setCurrentTapIndex({required int? index}){
     });
   }
 
-  /*Future<Either<Failure,dynamic>>setDiscoverable({required Duration duration})async{
-    final result = await repositoryIMPL.setDiscoverable(durationInSeconds: duration.inSeconds);
-  }*/
-
   Future<Either<Failure,bool>>pairDevice({required String deviceAddress})async{
     final result = await repositoryIMPL.pairDevice(deviceAddress: deviceAddress);
-    // result.fold((l) => null, (r) => null);
     return result;
   }
+  BluetoothConnection? currentConnection;
+
   Future<Either<Failure,BluetoothConnection>>connectDevice({required String deviceAddress})async{
-    return  await repositoryIMPL.connectToDevice(deviceAddress: deviceAddress).then((result) {
-      result.fold((l) {
-       // listOfDevicesConnected.removeWhere((element) => element.id)
+    final device = listOfDevicesDiscovered.firstWhere((element) => element.device.address==deviceAddress);
 
-      }, (r) {
-
-
+    if(device.device.isConnected){
+      return Right(currentConnection!);
+    }
+    return await repositoryIMPL.connectToDevice(deviceAddress: deviceAddress).then((result) {
+      result.fold((l) {}, (r) {
+       // if there is an old connection, we need to ;
+        if (currentConnection?.isConnected??false){
+          currentConnection?.close();
+          currentConnection?.dispose();
+          notifyListeners();
+        }else{
+          currentConnection = r;
+          notifyListeners();
+        }
       });
       return result;
     });
@@ -257,6 +263,8 @@ void setCurrentTapIndex({required int? index}){
   }
   @override
   void dispose() {
+    currentConnection?.close();
+    currentConnection?.dispose();
     discoverySubscription?.cancel();
     discoverySubscription = null;
     super.dispose();

@@ -1,4 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:bluetooth_example/core/brand_guideline/brand_guidline.dart';
+import 'package:bluetooth_example/features/bluetooth-feature/bloototh_view_model.dart';
 import 'package:bluetooth_example/features/esp32-command-screen/page_scroll_view_model.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -210,12 +213,85 @@ class DashboardScreen extends StatelessWidget {
                             padding: EdgeInsets.all(
                                 Brand.appPadding(context: context)),
                             child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Container(
-                                  color: Colors.grey,
-                                  height: 20,
-                                  width: deviceWidth,
-                                )
+                                Text(
+                                  'click the button to turn on led',
+                                  style: GoogleFonts.poppins(
+                                    color: Brand.blackGrey,
+                                    fontSize: Brand.h3Size(context),
+                                    fontWeight: Brand.h3Weight,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: deviceWidth * 0.2,
+                                ),
+                                StreamBuilder<Uint8List>(
+                                    stream: context
+                                        .read<BluetoothViewModel>()
+                                        .currentConnection
+                                        ?.input,
+                                    builder: (context, snapshot) {
+                                      if (snapshot.hasData) {
+                                        return Text('value from BLE : ${snapshot.data}',
+                                            style: GoogleFonts.poppins(
+                                              color: Brand.darkTeal,
+                                              fontSize: Brand.h2Size(context),
+                                              fontWeight: Brand.h2Weight,
+                                            ));
+                                      }
+                                      if (snapshot.hasError) {
+                                        return Text(
+                                          'An error occurred : ',
+                                          style: GoogleFonts.poppins(
+                                            color: Colors.redAccent,
+                                            fontSize: Brand.h2Size(context),
+                                            fontWeight: Brand.h2Weight,
+                                          ),
+                                        );
+                                      }
+                                      return const Center(
+                                        child: CircularProgressIndicator(),
+                                      );
+                                    }),
+                                SizedBox(
+                                  height: deviceWidth * 0.2,
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    // final a = context.read<BluetoothViewModel>().currentConnection?.input?.listen((event) { });
+                                    context
+                                        .read<BluetoothViewModel>()
+                                        .currentConnection
+                                        ?.output
+                                        .add(Uint8List.fromList('1'.codeUnits));
+                                  },
+                                  child: Container(
+                                    color: Colors.grey,
+                                    height: deviceWidth * .2,
+                                    width: deviceWidth,
+                                    child: Text('on'),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: deviceWidth * 0.1,
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    // final a = context.read<BluetoothViewModel>().currentConnection?.input?.listen((event) { });
+                                    context
+                                        .read<BluetoothViewModel>()
+                                        .currentConnection
+                                        ?.output
+                                        .add(Uint8List.fromList('1'.codeUnits));
+                                  },
+                                  child: Container(
+                                    color: Colors.grey,
+                                    height: deviceWidth * .2,
+                                    width: deviceWidth,
+                                    child: Text('Off'),
+                                  ),
+                                ),
                               ],
                             ),
                           );
