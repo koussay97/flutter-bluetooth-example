@@ -253,6 +253,7 @@ void setCurrentTapIndex({required int? index}){
           currentConnection?.dispose();
           notifyListeners();
         }else{
+
           currentConnection = r;
           notifyListeners();
         }

@@ -213,7 +213,8 @@ class DashboardScreen extends StatelessWidget {
                             padding: EdgeInsets.all(
                                 Brand.appPadding(context: context)),
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Text(
                                   'click the button to turn on led',
@@ -224,7 +225,7 @@ class DashboardScreen extends StatelessWidget {
                                   ),
                                 ),
                                 SizedBox(
-                                  height: deviceWidth * 0.2,
+                                  height: deviceWidth * 0.1,
                                 ),
                                 StreamBuilder<Uint8List>(
                                     stream: context
@@ -233,7 +234,7 @@ class DashboardScreen extends StatelessWidget {
                                         ?.input,
                                     builder: (context, snapshot) {
                                       if (snapshot.hasData) {
-                                        return Text('value from BLE : ${snapshot.data}',
+                                        return Text('value from BLE : ${String.fromCharCodes(snapshot.data!)}',
                                             style: GoogleFonts.poppins(
                                               color: Brand.darkTeal,
                                               fontSize: Brand.h2Size(context),
@@ -250,48 +251,67 @@ class DashboardScreen extends StatelessWidget {
                                           ),
                                         );
                                       }
-                                      return const Center(
-                                        child: CircularProgressIndicator(),
+                                      return Text(
+                                        'click to toggle LED',
+                                        style: GoogleFonts.poppins(
+                                          color: Colors.white,
+                                          fontSize: Brand.h2Size(context),
+                                          fontWeight: Brand.h2Weight,
+                                        ),
                                       );
                                     }),
                                 SizedBox(
                                   height: deviceWidth * 0.2,
                                 ),
-                                InkWell(
-                                  onTap: () {
-                                    // final a = context.read<BluetoothViewModel>().currentConnection?.input?.listen((event) { });
-                                    context
-                                        .read<BluetoothViewModel>()
-                                        .currentConnection
-                                        ?.output
-                                        .add(Uint8List.fromList('1'.codeUnits));
-                                  },
-                                  child: Container(
-                                    color: Colors.grey,
-                                    height: deviceWidth * .2,
-                                    width: deviceWidth,
-                                    child: Text('on'),
+                                Row(children: [
+                                  InkWell(
+                                    onTap: () {
+                                      // final a = context.read<BluetoothViewModel>().currentConnection?.input?.listen((event) { });
+                                      context
+                                          .read<BluetoothViewModel>()
+                                          .currentConnection
+                                          ?.output
+                                          .add(Uint8List.fromList('1'.codeUnits));
+                                    },
+                                    child: Container(
+                                      color: Colors.grey,
+                                      height: deviceWidth * .1,
+                                      width: deviceWidth*0.1,
+                                      child: Center(child: Text('On',style: GoogleFonts.poppins(
+                                        color: Colors.white,
+                                        fontSize: Brand.h2Size(context),
+                                        fontWeight: Brand.h2Weight,
+                                      ),)),
+                                    ),
                                   ),
-                                ),
-                                SizedBox(
-                                  height: deviceWidth * 0.1,
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    // final a = context.read<BluetoothViewModel>().currentConnection?.input?.listen((event) { });
-                                    context
-                                        .read<BluetoothViewModel>()
-                                        .currentConnection
-                                        ?.output
-                                        .add(Uint8List.fromList('1'.codeUnits));
-                                  },
-                                  child: Container(
-                                    color: Colors.grey,
-                                    height: deviceWidth * .2,
-                                    width: deviceWidth,
-                                    child: Text('Off'),
+                                  SizedBox(
+                                    width: deviceWidth * 0.1,
                                   ),
-                                ),
+                                  InkWell(
+                                    onTap: () {
+                                      // final a = context.read<BluetoothViewModel>().currentConnection?.input?.listen((event) { });
+                                      context
+                                          .read<BluetoothViewModel>()
+                                          .currentConnection
+                                          ?.output
+                                          .add(Uint8List.fromList('0'.codeUnits));
+                                    },
+                                    child: Container(
+                                      width: deviceWidth*0.1,
+                                      color: Colors.grey,
+                                      height: deviceWidth * .1,
+                                      child: Center(
+                                        child: Text('Off',style:  GoogleFonts.poppins(
+                                          color: Colors.white,
+                                          fontSize: Brand.h2Size(context),
+                                          fontWeight: Brand.h2Weight,
+                                        ),),
+                                      ),
+                                    ),
+                                  ),
+
+                                ]),
+
                               ],
                             ),
                           );
