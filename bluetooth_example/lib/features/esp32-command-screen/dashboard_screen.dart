@@ -1,7 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:bluetooth_example/core/brand_guideline/brand_guidline.dart';
-import 'package:bluetooth_example/features/bluetooth-feature/bloototh_view_model.dart';
+
+import 'package:bluetooth_example/features/bluetooth_feature/bloototh_view_model.dart';
 import 'package:bluetooth_example/features/esp32-command-screen/page_scroll_view_model.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -237,8 +238,8 @@ class DashboardScreen extends StatelessWidget {
                                         return Text('value from BLE : ${String.fromCharCodes(snapshot.data!)}',
                                             style: GoogleFonts.poppins(
                                               color: Brand.darkTeal,
-                                              fontSize: Brand.h2Size(context),
-                                              fontWeight: Brand.h2Weight,
+                                              fontSize: Brand.h3Size(context),
+                                              fontWeight: Brand.h3Weight,
                                             ));
                                       }
                                       if (snapshot.hasError) {
@@ -246,15 +247,15 @@ class DashboardScreen extends StatelessWidget {
                                           'An error occurred : ',
                                           style: GoogleFonts.poppins(
                                             color: Colors.redAccent,
-                                            fontSize: Brand.h2Size(context),
-                                            fontWeight: Brand.h2Weight,
+                                            fontSize: Brand.h3Size(context),
+                                            fontWeight: Brand.h3Weight,
                                           ),
                                         );
                                       }
                                       return Text(
                                         'click to toggle LED',
                                         style: GoogleFonts.poppins(
-                                          color: Colors.white,
+                                          color: Colors.black,
                                           fontSize: Brand.h2Size(context),
                                           fontWeight: Brand.h2Weight,
                                         ),

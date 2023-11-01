@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "154447156151",
+    "project_id": "bluetooth-app-e567f",
+    "storage_bucket": "bluetooth-app-e567f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:154447156151:android:0ec1e06b248495a5ff4e32",
+        "android_client_info": {
+          "package_name": "com.example.bluetooth_example"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZbgxb2k4t3is8E-NDn94gh750wcq1cfU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:154447156151:android:6b67f8c6a69e52a8ff4e32",
+        "android_client_info": {
+          "package_name": "com.example.weather_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZbgxb2k4t3is8E-NDn94gh750wcq1cfU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

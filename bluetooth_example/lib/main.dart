@@ -3,13 +3,20 @@ import 'package:bluetooth_example/core/routing/route_names.dart';
 import 'package:bluetooth_example/core/utils/bleutooth_repository_implementation.dart';
 import 'package:bluetooth_example/core/utils/location_repository_implementation.dart';
 import 'package:bluetooth_example/core/utils/scroll_behavior.dart';
-import 'package:bluetooth_example/features/bluetooth-feature/bloototh_view_model.dart';
+import 'package:bluetooth_example/features/bluetooth_feature/bloototh_view_model.dart';
+
 import 'package:bluetooth_example/features/esp32-command-screen/page_scroll_view_model.dart';
+import 'package:bluetooth_example/firebase_options.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+Future<void> main()async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp( MultiProvider(
       providers: [
        ChangeNotifierProvider<PageScrollViewModel>(create: (_){

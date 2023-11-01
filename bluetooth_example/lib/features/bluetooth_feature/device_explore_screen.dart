@@ -1,7 +1,8 @@
 import 'package:bluetooth_example/core/brand_guideline/brand_guidline.dart';
 import 'package:bluetooth_example/core/routing/pop_screen_util.dart';
 import 'package:bluetooth_example/core/routing/route_names.dart';
-import 'package:bluetooth_example/features/bluetooth-feature/bloototh_view_model.dart';
+
+import 'package:bluetooth_example/features/bluetooth_feature/bloototh_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:google_fonts/google_fonts.dart';

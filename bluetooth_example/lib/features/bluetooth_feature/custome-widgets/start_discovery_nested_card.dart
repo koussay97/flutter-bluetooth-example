@@ -1,5 +1,6 @@
 import 'package:bluetooth_example/core/brand_guideline/brand_guidline.dart';
-import 'package:bluetooth_example/features/bluetooth-feature/bloototh_view_model.dart';
+import 'package:bluetooth_example/features/bluetooth_feature/bloototh_view_model.dart';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
