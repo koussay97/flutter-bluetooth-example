@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-
 import 'discovery_bloc_event.dart';
 import 'discovery_bloc_state.dart';
 

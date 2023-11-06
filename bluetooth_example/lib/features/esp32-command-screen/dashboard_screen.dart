@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-
 import 'package:bluetooth_example/core/brand_guideline/brand_guidline.dart';
 import 'package:bluetooth_example/features/bluetooth-feature/bloototh_view_model.dart';
 import 'package:bluetooth_example/features/esp32-command-screen/page_scroll_view_model.dart';
@@ -79,7 +78,7 @@ class DashboardScreen extends StatelessWidget {
                                         fit: BoxFit.cover,
                                         opacity: 0.9,
                                         image: const NetworkImage(
-                                            'https://d3mxt5v3yxgcsr.cloudfront.net/courses/10688/course_10688_image.jpg'),
+                                            'https://blog.veritable-potager.fr/wp-content/uploads/2017/04/culture-hydroponie-hors-sol-jardin-interieur.jpg'),
                                       ),
                                       //color: Colors.blue
                                     ),
@@ -159,20 +158,21 @@ class DashboardScreen extends StatelessWidget {
                         RealTimeDataCard(
                           width: deviceWidth,
                           height: deviceWidth * 0.2,
-                          title: 'Temperature',
+                          title: 'Temp',
                           chartTitle: '22°C',
                           chartValue: 66,
                           leadingIcon: FontAwesome.temperature_high,
                         ),
+
                         SizedBox(
                           height: deviceWidth * 0.05,
                         ),
                         RealTimeDataCard(
                           width: deviceWidth,
                           height: deviceWidth * 0.2,
-                          title: 'Humidity',
+                          title: 'Hum',
                           chartTitle: '20%',
-                          chartValue: 20.0,
+                          chartValue: 20,
                           leadingIcon: FontAwesome.cloud_showers_water,
                         ),
                         SizedBox(
@@ -181,13 +181,46 @@ class DashboardScreen extends StatelessWidget {
                         RealTimeDataCard(
                           width: deviceWidth,
                           height: deviceWidth * 0.2,
-                          title: 'PH,hPa',
-                          chartTitle: '1100 hpa',
-                          chartValue: 85,
-                          leadingIcon: FontAwesome.face_tired,
+                          title: 'PH',
+                          chartTitle: '7 ',
+                          chartValue: 50,
+                          leadingIcon: Icons.device_hub,
                         ),
                         SizedBox(
+                          height: deviceWidth * 0.05,
+                        ),
+                        RealTimeDataCard(
+                          width: deviceWidth,
                           height: deviceWidth * 0.2,
+                          title: 'EC',
+                          chartTitle: '10 mS/cm',
+                          chartValue: 90,
+                          leadingIcon:  Icons.flash_on,
+                        ),
+                        SizedBox(
+                          height: deviceWidth * 0.05,
+                        ),
+                        RealTimeDataCard(
+                          width: deviceWidth,
+                          height: deviceWidth * 0.2,
+                          title: 'DO',
+                          chartTitle: '8 ',
+                          chartValue: 25,
+                          leadingIcon:  Icons.waves,
+                        ),
+                        SizedBox(
+                          height: deviceWidth * 0.05,
+                        ),
+                        RealTimeDataCard(
+                          width: deviceWidth,
+                          height: deviceWidth * 0.2,
+                          title: 'Water Temp',
+                          chartTitle: '25°C',
+                          chartValue: 80,
+                          leadingIcon:  Icons.thermostat,
+                        ),
+                        SizedBox(
+                          height: deviceWidth * 0.05,
                         ),
                       ],
                     ),
@@ -237,8 +270,8 @@ class DashboardScreen extends StatelessWidget {
                                         return Text('value from BLE : ${String.fromCharCodes(snapshot.data!)}',
                                             style: GoogleFonts.poppins(
                                               color: Brand.darkTeal,
-                                              fontSize: Brand.h2Size(context),
-                                              fontWeight: Brand.h2Weight,
+                                              fontSize: Brand.h4Size(context),
+                                              fontWeight: Brand.h4Weight,
                                             ));
                                       }
                                       if (snapshot.hasError) {
@@ -246,8 +279,8 @@ class DashboardScreen extends StatelessWidget {
                                           'An error occurred : ',
                                           style: GoogleFonts.poppins(
                                             color: Colors.redAccent,
-                                            fontSize: Brand.h2Size(context),
-                                            fontWeight: Brand.h2Weight,
+                                            fontSize: Brand.h4Size(context),
+                                            fontWeight: Brand.h4Weight,
                                           ),
                                         );
                                       }
