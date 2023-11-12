@@ -1,7 +1,6 @@
 import 'package:bluetooth_example/core/brand_guideline/brand_guidline.dart';
 import 'package:bluetooth_example/core/routing/pop_screen_util.dart';
 import 'package:bluetooth_example/core/routing/route_names.dart';
-
 import 'package:bluetooth_example/features/bluetooth_feature/bloototh_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
@@ -93,71 +92,111 @@ class DeviceExploreScreen extends StatelessWidget {
               Center(
                   child: ActionButton(
                       onTap: () {
-                        if(device.device.isBonded){
-                          context.read<BluetoothViewModel>().connectDevice(deviceAddress: device.device.address).then((value) {
+                        if (device.device.isBonded) {
+                          context
+                              .read<BluetoothViewModel>()
+                              .connectDevice(
+                                  deviceAddress: device.device.address)
+                              .then((value) {
                             value.fold((l) {
-                             /* showPopup(
+                              showPopup(
                                   context: context,
                                   title: 'Failed to Connect',
                                   ctaWidget: MaterialButton(
                                       color: Brand.darkTeal,
-                                    padding: EdgeInsets.all(Brand.appPadding(context: context)*0.5),
-                                      child: Text('Close', style: GoogleFonts.poppins(
-                                        fontSize: Brand.h3Size(context),
-                                        fontWeight: Brand.h3Weight,
-                                        color: Colors.white,
-                                      ),),
-                                      onPressed: (){Navigator.pop(context);}),
-                                  centerIcon: const Icon(BoxIcons.bx_bluetooth,color: Brand.darkTeal,),
-                                  innerPadding: Brand.appPadding(context: context)*0.5,
-                                  text: 'your attempt to connect to device : ${device.device.name} failed, please try again');
-                             */
-                              Navigator.pushNamed(context, RouteAccessors.dashboardName,arguments: device.device);
+                                      padding: EdgeInsets.all(
+                                          Brand.appPadding(context: context) *
+                                              0.5),
+                                      child: Text(
+                                        'Close',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: Brand.h3Size(context),
+                                          fontWeight: Brand.h3Weight,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      }),
+                                  centerIcon: const Icon(
+                                    BoxIcons.bx_bluetooth,
+                                    color: Brand.darkTeal,
+                                  ),
+                                  innerPadding:
+                                      Brand.appPadding(context: context) * 0.5,
+                                  text:
+                                      'your attempt to connect to device : ${device.device.name} failed, please try again');
+                              //  Navigator.pushNamed(context, RouteAccessors.dashboardName,arguments: device.device);
                             }, (r) {
-                              Navigator.pushNamed(context, RouteAccessors.dashboardName,arguments: device.device);
+                              Navigator.pushNamed(
+                                  context, RouteAccessors.dashboardName,
+                                  arguments: device.device);
                             });
                           });
-                        }else{
-                          context.read<BluetoothViewModel>().pairDevice(deviceAddress: device.device.address).then((value) {
-
+                        } else {
+                          context
+                              .read<BluetoothViewModel>()
+                              .pairDevice(deviceAddress: device.device.address)
+                              .then((value) {
                             value.fold((l) {
                               showPopup(
                                   context: context,
                                   title: 'Pairing failed',
                                   ctaWidget: MaterialButton(
                                       color: Brand.darkTeal,
-                                      padding: EdgeInsets.all(Brand.appPadding(context: context)),
-                                      child: Text('Close', style: GoogleFonts.poppins(
-                                        fontSize: Brand.h3Size(context),
-                                        fontWeight: Brand.h3Weight,
-                                        color: Colors.white,
-                                      ),),
-                                      onPressed: (){Navigator.pop(context);}),
-                                  centerIcon: const Icon(BoxIcons.bx_bluetooth,color: Brand.darkTeal,),
-                                  innerPadding: Brand.appPadding(context: context)*0.5,
-                                  text: 'your attempt to pair with device : ${device.device.name} failed, please try again');
-
+                                      padding: EdgeInsets.all(
+                                          Brand.appPadding(context: context)),
+                                      child: Text(
+                                        'Close',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: Brand.h3Size(context),
+                                          fontWeight: Brand.h3Weight,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      }),
+                                  centerIcon: const Icon(
+                                    BoxIcons.bx_bluetooth,
+                                    color: Brand.darkTeal,
+                                  ),
+                                  innerPadding:
+                                      Brand.appPadding(context: context) * 0.5,
+                                  text:
+                                      'your attempt to pair with device : ${device.device.name} failed, please try again');
                             }, (r) {
                               showPopup(
                                   context: context,
                                   title: 'Pairing is Successful',
                                   ctaWidget: MaterialButton(
+                                      color: Brand.darkTeal,
+                                      padding: EdgeInsets.all(
+                                          Brand.appPadding(context: context)),
+                                      child: Text(
+                                        'Close',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: Brand.h3Size(context),
+                                          fontWeight: Brand.h3Weight,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      }),
+                                  centerIcon: const Icon(
+                                    BoxIcons.bx_bluetooth,
                                     color: Brand.darkTeal,
-                                      padding: EdgeInsets.all(Brand.appPadding(context: context)),
-                                      child: Text('Close', style: GoogleFonts.poppins(
-                                        fontSize: Brand.h3Size(context),
-                                        fontWeight: Brand.h3Weight,
-                                        color: Colors.white,
-                                      ),),
-                                      onPressed: (){Navigator.pop(context);}),
-                                  centerIcon: const Icon(BoxIcons.bx_bluetooth,color: Brand.darkTeal,),
-                                  innerPadding: Brand.appPadding(context: context)*0.5,
-                                  text: 'your are now paired to device : ${device.device.name} ');
+                                  ),
+                                  innerPadding:
+                                      Brand.appPadding(context: context) * 0.5,
+                                  text:
+                                      'your are now paired to device : ${device.device.name} ');
                             });
                           });
                         }
-
-                      }, isConnectable: device.device.isBonded)),
+                      },
+                      isConnectable: device.device.isBonded)),
               SizedBox(
                 height: deviceWidth * 0.05,
               ),
