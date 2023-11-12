@@ -1,15 +1,12 @@
-import 'dart:typed_data';
-
 import 'package:bluetooth_example/core/brand_guideline/brand_guidline.dart';
-
-import 'package:bluetooth_example/features/bluetooth_feature/bloototh_view_model.dart';
 import 'package:bluetooth_example/features/esp32-command-screen/page_scroll_view_model.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:provider/provider.dart';
+
+import 'dashboard_widgets/dashboard_widgets.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({Key? key}) : super(key: key);
@@ -80,7 +77,7 @@ class DashboardScreen extends StatelessWidget {
                                         fit: BoxFit.cover,
                                         opacity: 0.9,
                                         image: const NetworkImage(
-                                            'https://d3mxt5v3yxgcsr.cloudfront.net/courses/10688/course_10688_image.jpg'),
+                                            'https://blog.veritable-potager.fr/wp-content/uploads/2017/04/culture-hydroponie-hors-sol-jardin-interieur.jpg'),
                                       ),
                                       //color: Colors.blue
                                     ),
@@ -149,6 +146,10 @@ class DashboardScreen extends StatelessWidget {
                         SizedBox(
                           height: deviceWidth * 0.2,
                         ),
+                        const ChartConfigWidget(),
+                        SizedBox(
+                          height: deviceWidth * 0.1,
+                        ),
                         Text(
                           'Real Time Data',
                           style: GoogleFonts.poppins(
@@ -160,7 +161,7 @@ class DashboardScreen extends StatelessWidget {
                         RealTimeDataCard(
                           width: deviceWidth,
                           height: deviceWidth * 0.2,
-                          title: 'Temperature',
+                          title: 'Temp',
                           chartTitle: '22°C',
                           chartValue: 66,
                           leadingIcon: FontAwesome.temperature_high,
@@ -171,9 +172,9 @@ class DashboardScreen extends StatelessWidget {
                         RealTimeDataCard(
                           width: deviceWidth,
                           height: deviceWidth * 0.2,
-                          title: 'Humidity',
+                          title: 'Hum',
                           chartTitle: '20%',
-                          chartValue: 20.0,
+                          chartValue: 20,
                           leadingIcon: FontAwesome.cloud_showers_water,
                         ),
                         SizedBox(
@@ -182,10 +183,43 @@ class DashboardScreen extends StatelessWidget {
                         RealTimeDataCard(
                           width: deviceWidth,
                           height: deviceWidth * 0.2,
-                          title: 'PH,hPa',
-                          chartTitle: '1100 hpa',
-                          chartValue: 85,
-                          leadingIcon: FontAwesome.face_tired,
+                          title: 'PH',
+                          chartTitle: '7 ',
+                          chartValue: 50,
+                          leadingIcon: Icons.device_hub,
+                        ),
+                        SizedBox(
+                          height: deviceWidth * 0.05,
+                        ),
+                        RealTimeDataCard(
+                          width: deviceWidth,
+                          height: deviceWidth * 0.2,
+                          title: 'EC',
+                          chartTitle: '10 mS/cm',
+                          chartValue: 90,
+                          leadingIcon: Icons.flash_on,
+                        ),
+                        SizedBox(
+                          height: deviceWidth * 0.05,
+                        ),
+                        RealTimeDataCard(
+                          width: deviceWidth,
+                          height: deviceWidth * 0.2,
+                          title: 'DO',
+                          chartTitle: '8 ',
+                          chartValue: 25,
+                          leadingIcon: Icons.waves,
+                        ),
+                        SizedBox(
+                          height: deviceWidth * 0.05,
+                        ),
+                        RealTimeDataCard(
+                          width: deviceWidth,
+                          height: deviceWidth * 0.2,
+                          title: 'Water Temp',
+                          chartTitle: '25°C',
+                          chartValue: 80,
+                          leadingIcon: Icons.thermostat,
                         ),
                         SizedBox(
                           height: deviceWidth * 0.2,
@@ -200,597 +234,11 @@ class DashboardScreen extends StatelessWidget {
           Positioned(
               bottom: 0,
               width: deviceWidth,
-              child: InkWell(
-                  onTap: () {
-                    showModalBottomSheet(
-                        constraints: BoxConstraints(
-                            minWidth: deviceWidth,
-                            minHeight: deviceWidth * 0.1,
-                            maxWidth: deviceWidth,
-                            maxHeight: deviceWidth),
-                        context: context,
-                        builder: (context) {
-                          return Padding(
-                            padding: EdgeInsets.all(
-                                Brand.appPadding(context: context)),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'click the button to turn on led',
-                                  style: GoogleFonts.poppins(
-                                    color: Brand.blackGrey,
-                                    fontSize: Brand.h3Size(context),
-                                    fontWeight: Brand.h3Weight,
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: deviceWidth * 0.1,
-                                ),
-                                StreamBuilder<Uint8List>(
-                                    stream: context
-                                        .read<BluetoothViewModel>()
-                                        .currentConnection
-                                        ?.input,
-                                    builder: (context, snapshot) {
-                                      if (snapshot.hasData) {
-                                        return Text('value from BLE : ${String.fromCharCodes(snapshot.data!)}',
-                                            style: GoogleFonts.poppins(
-                                              color: Brand.darkTeal,
-                                              fontSize: Brand.h3Size(context),
-                                              fontWeight: Brand.h3Weight,
-                                            ));
-                                      }
-                                      if (snapshot.hasError) {
-                                        return Text(
-                                          'An error occurred : ',
-                                          style: GoogleFonts.poppins(
-                                            color: Colors.redAccent,
-                                            fontSize: Brand.h3Size(context),
-                                            fontWeight: Brand.h3Weight,
-                                          ),
-                                        );
-                                      }
-                                      return Text(
-                                        'click to toggle LED',
-                                        style: GoogleFonts.poppins(
-                                          color: Colors.black,
-                                          fontSize: Brand.h2Size(context),
-                                          fontWeight: Brand.h2Weight,
-                                        ),
-                                      );
-                                    }),
-                                SizedBox(
-                                  height: deviceWidth * 0.2,
-                                ),
-                                Row(children: [
-                                  InkWell(
-                                    onTap: () {
-                                      // final a = context.read<BluetoothViewModel>().currentConnection?.input?.listen((event) { });
-                                      context
-                                          .read<BluetoothViewModel>()
-                                          .currentConnection
-                                          ?.output
-                                          .add(Uint8List.fromList('1'.codeUnits));
-                                    },
-                                    child: Container(
-                                      color: Colors.grey,
-                                      height: deviceWidth * .1,
-                                      width: deviceWidth*0.1,
-                                      child: Center(child: Text('On',style: GoogleFonts.poppins(
-                                        color: Colors.white,
-                                        fontSize: Brand.h2Size(context),
-                                        fontWeight: Brand.h2Weight,
-                                      ),)),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: deviceWidth * 0.1,
-                                  ),
-                                  InkWell(
-                                    onTap: () {
-                                      // final a = context.read<BluetoothViewModel>().currentConnection?.input?.listen((event) { });
-                                      context
-                                          .read<BluetoothViewModel>()
-                                          .currentConnection
-                                          ?.output
-                                          .add(Uint8List.fromList('0'.codeUnits));
-                                    },
-                                    child: Container(
-                                      width: deviceWidth*0.1,
-                                      color: Colors.grey,
-                                      height: deviceWidth * .1,
-                                      child: Center(
-                                        child: Text('Off',style:  GoogleFonts.poppins(
-                                          color: Colors.white,
-                                          fontSize: Brand.h2Size(context),
-                                          fontWeight: Brand.h2Weight,
-                                        ),),
-                                      ),
-                                    ),
-                                  ),
-
-                                ]),
-
-                              ],
-                            ),
-                          );
-                        });
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: Brand.darkTeal,
-                        borderRadius: BorderRadius.only(
-                            topRight: Radius.circular(
-                                Brand.appPadding(context: context) * 4),
-                            topLeft: Radius.circular(
-                                Brand.appPadding(context: context) * 4))),
-                    height: deviceWidth * 0.1,
-                    width: deviceWidth,
-                    child: Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.arrow_circle_up_outlined,
-                            color: Colors.white,
-                          ),
-                          Text(
-                            'Send Data',
-                            style: GoogleFonts.poppins(
-                                color: Colors.white,
-                                fontSize: Brand.h4Size(context),
-                                fontWeight: Brand.h4Weight),
-                          )
-                        ],
-                      ),
-                      /* AnimatedIcon(
-                     progress: Tween<double>(begin: 0.0,end :1.0).animate(),
-                     icon: AnimatedIcons.arrow_menu,
-                   ),
-                  */
-                    ),
-                  ))),
+              child: BottomCommunicationWidget(deviceWidth: deviceWidth)),
         ],
       ),
     );
   }
 }
 
-class RealTimeDataCard extends StatelessWidget {
-  final String title;
-  final IconData leadingIcon;
-  final String chartTitle;
-  final double chartValue;
-  final double height;
-  final double width;
-
-  const RealTimeDataCard({
-    Key? key,
-    required this.title,
-    required this.chartTitle,
-    required this.chartValue,
-    required this.leadingIcon,
-    required this.width,
-    required this.height,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        height: height,
-        width: width,
-        decoration: BoxDecoration(
-            color: Brand.paleGreyBlue.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(
-                Brand.appPadding(context: context) * 0.5)),
-        padding: EdgeInsets.symmetric(
-            horizontal: Brand.appPadding(context: context) * 0.5),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(
-              leadingIcon,
-              size: Brand.textSize(context) * 2,
-              color: chartValue < 85
-                  ? chartValue > 65
-                      ? Colors.orangeAccent
-                      : Brand.darkTeal
-                  : Colors.redAccent,
-            ),
-            Text(
-              title,
-              style: GoogleFonts.poppins(
-                  color: Brand.blackGrey,
-                  fontSize: Brand.h3Size(context),
-                  fontWeight: Brand.h3Weight),
-            ),
-            SizedBox(
-              height: height,
-              width: height,
-              child: PieChart(
-                PieChartData(
-                    startDegreeOffset: -90.0,
-                    borderData: FlBorderData(
-                        border: const Border.symmetric(
-                            horizontal: BorderSide(
-                          color: Colors.white,
-                          width: 1,
-                        )),
-                        show: true),
-                    centerSpaceColor: Brand.brightGreyBlue,
-                    pieTouchData: PieTouchData(
-                        enabled: true,
-                        longPressDuration: const Duration(milliseconds: 200)),
-                    sections: [
-                      PieChartSectionData(
-                          color: chartValue < 85
-                              ? chartValue > 65
-                                  ? Colors.orangeAccent
-                                  : Brand.darkGreyBlue
-                              : Colors.redAccent,
-                          value: chartValue,
-                          title: chartTitle,
-                          titleStyle: TextStyle(
-                              color: Colors.white,
-                              fontSize: Brand.textSize(context) * 0.8)),
-                      PieChartSectionData(
-                          showTitle: false,
-                          color: Brand.darkTeal,
-                          value: 100 - chartValue),
-                    ]),
-              ),
-            ),
-          ],
-        ));
-  }
-}
-
-class DataStream extends StatefulWidget {
-  final double listHeight;
-  final double listWidth;
-
-  const DataStream({
-    Key? key,
-    required this.listHeight,
-    required this.listWidth,
-  }) : super(key: key);
-
-  @override
-  State<DataStream> createState() => _DataStreamState();
-}
-
-class _DataStreamState extends State<DataStream> {
-  late final PageController pageController;
-  late double _currPageValue;
-
-  @override
-  void initState() {
-    _currPageValue = 0.0;
-    pageController = PageController(initialPage: 0, viewportFraction: 0.7)
-      ..addListener(pageControllerListener);
-    super.initState();
-  }
-
-  void pageControllerListener() {
-    setState(() {
-      _currPageValue = pageController.page ?? 0.0;
-      print(' page scroll from ui ::: $_currPageValue');
-      print(' page scroll from ui ::: ${pageController.position.pixels}');
-    });
-    context
-        .read<PageScrollViewModel>()
-        .scrollHorizontal(scroll: pageController.position.pixels);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    pageController.removeListener(pageControllerListener);
-    pageController.dispose();
-  }
-
-  _buildPageItem(int index) {
-    if (index == _currPageValue.floor()) {
-      debugPrint('page swiped from $index');
-      return PageSwipeFromElement(
-          scaleFactor: 0.8,
-          height: widget.listHeight,
-          index: index,
-          pageScroll: _currPageValue);
-    } else if (index == _currPageValue.floor() + 1) {
-      debugPrint('page swiped to $index');
-      return PageSwipeToElement(
-          height: widget.listHeight,
-          scaleFactor: 0.8,
-          pageScroll: _currPageValue,
-          index: index);
-    } else if (index == _currPageValue.floor() - 1) {
-      debugPrint('page off screen $index');
-      return PageOffScreen(
-          height: widget.listHeight,
-          scaleFactor: 0.8,
-          pageScroll: _currPageValue,
-          index: index);
-    }
-    return PageDefaultElement(
-      height: widget.listHeight,
-      scaleFactor: 0.8,
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-        height: widget.listHeight,
-        width: widget.listWidth,
-        child: PageView.builder(
-          controller: pageController,
-          physics: const BouncingScrollPhysics(),
-          itemCount: 5,
-          padEnds: true,
-          itemBuilder: (context, position) {
-            return Container(
-              //width: widget.listWidth,
-
-              //color: Colors.blue.withOpacity(0.3),
-              clipBehavior: Clip.none,
-              //alignment: Alignment.center,
-              padding: EdgeInsets.zero,
-              margin: const EdgeInsets.only(right: 1),
-              child: Center(child: _buildPageItem(position)),
-            );
-          },
-        ));
-  }
-}
-
-class PageSwipeFromElement extends StatelessWidget {
-  final int index;
-  final double scaleFactor;
-  final double pageScroll;
-  final double height;
-
-  const PageSwipeFromElement(
-      {Key? key,
-      required this.scaleFactor,
-      required this.height,
-      required this.index,
-      required this.pageScroll})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    var currScale = 1 - (pageScroll - index) * (1 - scaleFactor);
-    var currTrans = height * (1 - currScale) / 2;
-    final Matrix4 matrix = Matrix4.diagonal3Values(1.0, currScale, 1.0)
-      ..setTranslationRaw(0, currTrans, -currTrans);
-
-    return Transform(
-      alignment: Alignment.center,
-      origin: Offset.zero,
-      transform: matrix,
-      child: const PageContent(expandable: true),
-    );
-  }
-}
-
-class PageSwipeToElement extends StatelessWidget {
-  final int index;
-  final double scaleFactor;
-  final double pageScroll;
-  final double height;
-
-  const PageSwipeToElement(
-      {Key? key,
-      required this.height,
-      required this.scaleFactor,
-      required this.pageScroll,
-      required this.index})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    var currScale = scaleFactor + (pageScroll - index + 1) * (1 - scaleFactor);
-    var currTrans = height * (1 - currScale) / 2;
-    Matrix4 matrix = Matrix4.diagonal3Values(1.0, currScale, 1.0)
-      ..setTranslationRaw(0, currTrans, 0);
-    return Transform(
-        alignment: Alignment.center,
-        origin: Offset.zero,
-        transform: matrix,
-        child: const PageContent(
-          expandable: false,
-        ));
-  }
-}
-
-class PageOffScreen extends StatelessWidget {
-  final int index;
-  final double scaleFactor;
-  final double pageScroll;
-  final double height;
-
-  const PageOffScreen(
-      {Key? key,
-      required this.height,
-      required this.scaleFactor,
-      required this.pageScroll,
-      required this.index})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    var currScale = 1 - (pageScroll - index) * (1 - scaleFactor);
-    var currTrans = height * (1 - currScale) / 2;
-    Matrix4 matrix = Matrix4.diagonal3Values(1.0, currScale, 1.0)
-      ..setTranslationRaw(0, currTrans, 0);
-    return Transform(
-        alignment: Alignment.center,
-        origin: Offset.zero,
-        transform: matrix,
-        child: const PageContent(
-          expandable: false,
-        ));
-  }
-}
-
-class PageDefaultElement extends StatelessWidget {
-  final double scaleFactor;
-  final double height;
-
-  const PageDefaultElement({
-    Key? key,
-    required this.height,
-    required this.scaleFactor,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    var currScale = 0.8;
-    Matrix4 matrix = Matrix4.diagonal3Values(1.0, currScale, 1.0)
-      ..setTranslationRaw(0, height * (1 - scaleFactor) / 2, 0);
-    return Transform(
-        alignment: Alignment.center,
-        origin: Offset.zero,
-        transform: matrix,
-        child: const PageContent(
-          expandable: false,
-        ));
-  }
-}
-
-class PageContent extends StatefulWidget {
-  final bool expandable;
-
-  const PageContent({Key? key, required this.expandable}) : super(key: key);
-
-  @override
-  State<PageContent> createState() => _PageContentState();
-}
-
-class _PageContentState extends State<PageContent>
-    with SingleTickerProviderStateMixin {
-  late bool cardOpened;
-  static Duration duration = const Duration(milliseconds: 400);
-
-  late AnimationController controller;
-  late Animation<double> scaleAnimation;
-
-  @override
-  void initState() {
-    cardOpened = false;
-    controller = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 400));
-    scaleAnimation = Tween<double>(begin: 0.0, end: 1.1)
-        .animate(CurvedAnimation(parent: controller, curve: Curves.decelerate));
-
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final double deviceWidth = MediaQuery.of(context).size.width;
-    return GestureDetector(
-      onPanUpdate: (details) {
-        if (widget.expandable) {
-          if (details.delta.dy < 0) {
-            setState(() {
-              cardOpened = false;
-            });
-            controller.reverse();
-          } else {
-            setState(() {
-              cardOpened = true;
-            });
-            controller.forward();
-          }
-        }
-      },
-      onTap: () {
-        if (widget.expandable) {
-          setState(() {
-            cardOpened = !cardOpened;
-          });
-          if (cardOpened) {
-            controller.forward();
-          } else {
-            controller.reverse();
-          }
-        }
-      },
-      child: Container(
-        width: deviceWidth * 0.6,
-        //color: Colors.blue.withOpacity(0.3),
-        child: Stack(
-          clipBehavior: Clip.hardEdge,
-          alignment: Alignment.center,
-          children: [
-            AnimatedPositioned(
-              duration: duration,
-              top: cardOpened ? deviceWidth * 0.06 : 0,
-              width: deviceWidth * 0.5,
-              height: deviceWidth * 0.8,
-              child: AnimatedBuilder(
-                  animation: scaleAnimation,
-                  child: Container(
-                    padding: EdgeInsets.only(bottom: 5),
-                    alignment: Alignment.bottomCenter,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(
-                          Brand.appPadding(context: context)),
-                      color: Brand.darkTeal,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Icon(
-                          Icons.remove_red_eye,
-                          color: Colors.white,
-                        ),
-                        Icon(
-                          Icons.person,
-                          color: Colors.white,
-                        ),
-                      ],
-                    ),
-                  ),
-                  builder: (context, child) {
-                    return Transform.scale(
-                      scale: scaleAnimation.value, //cardOpened?1.1:0.5,
-                      origin: Offset.zero,
-                      child: child!,
-                    );
-                  }),
-            ),
-            Positioned(
-              width: deviceWidth * 0.5,
-              height: deviceWidth * 0.8,
-              top: 0,
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius:
-                      BorderRadius.circular(Brand.appPadding(context: context)),
-                  color: Colors.white,
-                ),
-                child: ScatterChart(ScatterChartData(
-                    maxX: 5,
-                    maxY: 5,
-                    minX: 0,
-                    minY: 0,
-                    scatterSpots: [
-                      ScatterSpot(1, 1),
-                      ScatterSpot(1.5, 2),
-                      ScatterSpot(2, 3),
-                      ScatterSpot(3.5, 1)
-                    ])),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+// upper page view block
