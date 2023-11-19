@@ -126,7 +126,9 @@ class DeviceExploreScreen extends StatelessWidget {
                                       Brand.appPadding(context: context) * 0.5,
                                   text:
                                       'your attempt to connect to device : ${device.device.name} failed, please try again');
-                              //  Navigator.pushNamed(context, RouteAccessors.dashboardName,arguments: device.device);
+                              /*   Navigator.pushNamed(
+                                  context, RouteAccessors.dashboardName,
+                                  arguments: device.device);*/
                             }, (r) {
                               Navigator.pushNamed(
                                   context, RouteAccessors.dashboardName,

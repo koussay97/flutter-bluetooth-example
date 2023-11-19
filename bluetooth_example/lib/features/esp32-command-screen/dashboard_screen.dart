@@ -1,4 +1,9 @@
+import 'dart:async';
+import 'dart:typed_data';
+
 import 'package:bluetooth_example/core/brand_guideline/brand_guidline.dart';
+import 'package:bluetooth_example/features/bluetooth_feature/bloototh_view_model.dart';
+import 'package:bluetooth_example/features/esp32-command-screen/dashboard_view_model.dart';
 import 'package:bluetooth_example/features/esp32-command-screen/page_scroll_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
@@ -8,17 +13,60 @@ import 'package:provider/provider.dart';
 
 import 'dashboard_widgets/dashboard_widgets.dart';
 
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends StatefulWidget {
   const DashboardScreen({Key? key}) : super(key: key);
+
+  @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  late final StreamSubscription<Uint8List>? _subscription;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      setState(() {
+        _subscription = context
+            .read<BluetoothViewModel>()
+            .currentConnection
+            ?.input
+            ?.listen((event) {
+          context.read<DashboardViewModel>().readValue(valueReadFromBLE: event);
+        });
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final pageScroll =
         context.select<PageScrollViewModel, double>((val) => val.scrollOffset);
-    //print('scroll from provider ::: $pageScroll');
+
     final device =
         ModalRoute.of(context)?.settings.arguments as BluetoothDevice;
     final deviceWidth = MediaQuery.of(context).size.width;
+    final chartConfig = context
+        .select<DashboardViewModel, ChartConfig>((value) => value.chartConfig);
+    final temperatureVal = context.select<DashboardViewModel, double>(
+        (value) => value.currentTemperatureVal);
+    final waterTemperatureVal = context.select<DashboardViewModel, double>(
+        (value) => value.currentWaterTempVal);
+    final phVal = context
+        .select<DashboardViewModel, double>((value) => value.currentPhVal);
+    final ECVal = context
+        .select<DashboardViewModel, double>((value) => value.currentEcVal);
+    final DoVal = context
+        .select<DashboardViewModel, double>((value) => value.currentDOxyVal);
+    final humidityVal = context.select<DashboardViewModel, double>(
+        (value) => value.currentHumidityVal);
     return Scaffold(
       appBar: AppBar(
           backgroundColor: Brand.darkTeal,
@@ -49,7 +97,7 @@ class DashboardScreen extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  SizedBox(
+                  /*  SizedBox(
                     height: deviceWidth,
                     child: Stack(
                       clipBehavior: Clip.none,
@@ -135,7 +183,7 @@ class DashboardScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                  ),
+                  ),*/
                   Padding(
                     padding: EdgeInsets.symmetric(
                       horizontal: Brand.appPadding(context: context),
@@ -159,66 +207,72 @@ class DashboardScreen extends StatelessWidget {
                         ),
                         SizedBox(height: deviceWidth * 0.02),
                         RealTimeDataCard(
+                          interval: chartConfig.temperatureInterval,
                           width: deviceWidth,
-                          height: deviceWidth * 0.2,
+                          height: deviceWidth * 0.5,
                           title: 'Temp',
-                          chartTitle: '22°C',
-                          chartValue: 66,
+                          chartTitle: '${temperatureVal}°C',
+                          chartValue: temperatureVal,
                           leadingIcon: FontAwesome.temperature_high,
                         ),
                         SizedBox(
                           height: deviceWidth * 0.05,
                         ),
                         RealTimeDataCard(
+                          interval: chartConfig.humidityInterval,
                           width: deviceWidth,
-                          height: deviceWidth * 0.2,
+                          height: deviceWidth * 0.5,
                           title: 'Hum',
-                          chartTitle: '20%',
-                          chartValue: 20,
+                          chartTitle: '${humidityVal}%',
+                          chartValue: humidityVal,
                           leadingIcon: FontAwesome.cloud_showers_water,
                         ),
                         SizedBox(
                           height: deviceWidth * 0.05,
                         ),
                         RealTimeDataCard(
+                          interval: chartConfig.phInterval,
                           width: deviceWidth,
-                          height: deviceWidth * 0.2,
+                          height: deviceWidth * 0.5,
                           title: 'PH',
-                          chartTitle: '7 ',
-                          chartValue: 50,
+                          chartTitle: '${phVal}',
+                          chartValue: phVal,
                           leadingIcon: Icons.device_hub,
                         ),
                         SizedBox(
                           height: deviceWidth * 0.05,
                         ),
                         RealTimeDataCard(
+                          interval: chartConfig.waterQualityInterval,
                           width: deviceWidth,
-                          height: deviceWidth * 0.2,
+                          height: deviceWidth * 0.5,
                           title: 'EC',
-                          chartTitle: '10 mS/cm',
-                          chartValue: 90,
+                          chartTitle: '${ECVal} mS/cm',
+                          chartValue: ECVal,
                           leadingIcon: Icons.flash_on,
                         ),
                         SizedBox(
                           height: deviceWidth * 0.05,
                         ),
                         RealTimeDataCard(
+                          interval: chartConfig.oxygenConcentrationInterval,
                           width: deviceWidth,
-                          height: deviceWidth * 0.2,
+                          height: deviceWidth * 0.5,
                           title: 'DO',
-                          chartTitle: '8 ',
-                          chartValue: 25,
+                          chartTitle: '${DoVal} mg/L',
+                          chartValue: DoVal,
                           leadingIcon: Icons.waves,
                         ),
                         SizedBox(
                           height: deviceWidth * 0.05,
                         ),
                         RealTimeDataCard(
+                          interval: chartConfig.waterTemperatureInterval,
                           width: deviceWidth,
-                          height: deviceWidth * 0.2,
-                          title: 'Water Temp',
-                          chartTitle: '25°C',
-                          chartValue: 80,
+                          height: deviceWidth * 0.5,
+                          title: 'Water',
+                          chartTitle: '${waterTemperatureVal}°C',
+                          chartValue: waterTemperatureVal,
                           leadingIcon: Icons.thermostat,
                         ),
                         SizedBox(

@@ -1,9 +1,7 @@
 import 'package:bluetooth_example/core/brand_guideline/brand_guidline.dart';
-import 'package:fl_chart/fl_chart.dart';
+import 'package:bluetooth_example/features/esp32-command-screen/dashboard_widgets/body_card_component/new_arc_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-
 
 class RealTimeDataCard extends StatelessWidget {
   final String title;
@@ -12,9 +10,11 @@ class RealTimeDataCard extends StatelessWidget {
   final double chartValue;
   final double height;
   final double width;
+  final List<double> interval;
 
   const RealTimeDataCard({
     Key? key,
+    required this.interval,
     required this.title,
     required this.chartTitle,
     required this.chartValue,
@@ -56,39 +56,9 @@ class RealTimeDataCard extends StatelessWidget {
             ),
             SizedBox(
               height: height,
-              width: height,
-              child: PieChart(
-                PieChartData(
-                    startDegreeOffset: -90.0,
-                    borderData: FlBorderData(
-                        border: const Border.symmetric(
-                            horizontal: BorderSide(
-                          color: Colors.white,
-                          width: 1,
-                        )),
-                        show: true),
-                    centerSpaceColor: Brand.brightGreyBlue,
-                    pieTouchData: PieTouchData(
-                        enabled: true,
-                        longPressDuration: const Duration(milliseconds: 200)),
-                    sections: [
-                      PieChartSectionData(
-                          color: chartValue < 85
-                              ? chartValue > 65
-                                  ? Colors.orangeAccent
-                                  : Brand.darkGreyBlue
-                              : Colors.redAccent,
-                          value: chartValue,
-                          title: chartTitle,
-                          titleStyle: TextStyle(
-                              color: Colors.white,
-                              fontSize: Brand.textSize(context) * 0.8)),
-                      PieChartSectionData(
-                          showTitle: false,
-                          color: Brand.darkTeal,
-                          value: 100 - chartValue),
-                    ]),
-              ),
+              width: height * 0.8,
+              child: ArcChart(
+                  interval: interval, reading: chartValue, title: chartTitle),
             ),
           ],
         ));

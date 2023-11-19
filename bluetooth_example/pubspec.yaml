@@ -51,6 +51,8 @@ dependencies:
   firebase_auth: ^4.12.0
   get_it: ^7.6.4
   cloud_firestore: ^4.12.2
+  syncfusion_flutter_charts: ^23.1.44
+  syncfusion_flutter_gauges: ^23.1.44
 
 
 dev_dependencies:
