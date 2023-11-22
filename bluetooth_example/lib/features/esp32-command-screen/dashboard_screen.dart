@@ -33,7 +33,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
             .currentConnection
             ?.input
             ?.listen((event) {
-          context.read<DashboardViewModel>().readValue(valueReadFromBLE: event);
+          print(
+
+              "this is the event coming from BLE ${String.fromCharCodes (event)}");
+          context.read<DashboardViewModel>().readValue(valueReadFromBLE:event);
         });
       });
     });
@@ -55,18 +58,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final deviceWidth = MediaQuery.of(context).size.width;
     final chartConfig = context
         .select<DashboardViewModel, ChartConfig>((value) => value.chartConfig);
-    final temperatureVal = context.select<DashboardViewModel, double>(
-        (value) => value.currentTemperatureVal);
-    final waterTemperatureVal = context.select<DashboardViewModel, double>(
-        (value) => value.currentWaterTempVal);
-    final phVal = context
-        .select<DashboardViewModel, double>((value) => value.currentPhVal);
-    final ECVal = context
-        .select<DashboardViewModel, double>((value) => value.currentEcVal);
-    final DoVal = context
-        .select<DashboardViewModel, double>((value) => value.currentDOxyVal);
-    final humidityVal = context.select<DashboardViewModel, double>(
-        (value) => value.currentHumidityVal);
+    final temperatureVal = (context.select<DashboardViewModel, double>(
+        (value) => value.currentTemperatureVal)) / 1.25;
+    final humidityVal = (context.select<DashboardViewModel, double>(
+            (value) => value.currentHumidityVal));
+    final phVal =( context
+        .select<DashboardViewModel, double>((value) => value.currentPhVal))/7.142;
+    final DoVal = (context
+        .select<DashboardViewModel, double>((value) => value.currentDOxyVal) ) / 2.25;
+    final ECVal = (context
+        .select<DashboardViewModel, double>((value) => value.currentEcVal)) / 10;
+    final waterTemperatureVal = (context.select<DashboardViewModel, double>(
+            (value) => value.currentWaterTempVal)) / 1.25 ;
     return Scaffold(
       appBar: AppBar(
           backgroundColor: Brand.darkTeal,
@@ -185,6 +188,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                   ),*/
                   Padding(
+                     
                     padding: EdgeInsets.symmetric(
                       horizontal: Brand.appPadding(context: context),
                     ),
@@ -278,9 +282,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         SizedBox(
                           height: deviceWidth * 0.2,
                         ),
+
                       ],
                     ),
                   ),
+
                 ],
               ),
             ),

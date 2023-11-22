@@ -26,49 +26,48 @@ class ChartConfig {
 
   static ChartConfig empty() {
     return ChartConfig(
-        temperatureInterval: [0, 20, 30, 50],
-        humidityInterval: [0, 20, 30, 100],
+        temperatureInterval: [0, 20, 35, 80],
+        humidityInterval: [0, 20, 50, 100],
         phInterval: [0, 6, 8, 14],
         waterQualityInterval: [0, 0.5, 2, 10],
-        oxygenConcentrationInterval: [0, 20, 30, 90],
-        waterTemperatureInterval: [0, 20, 30, 50]);
+        oxygenConcentrationInterval: [0, 7, 15, 40],
+        waterTemperatureInterval: [0, 20, 35, 80]);
   }
 
   ChartConfig copyWith({
     double? minIdealTem,
     double? maxIdealTemp,
-    double? maxTemperature,
-    double? minHumidity,
+
     double? minIdealHum,
     double? maxIdealHum,
-    double? maxHumidity,
+
     double? minIdealPh,
     double? maxIdealPh,
 
     double? minIdealEc,
     double? maxIdealEc,
 
-    double? minOxy,
+
     double? minIdealOxy,
     double? maxIdealOxy,
-    double? maxOxy,
+
 
     double? minIdealWaterTem,
     double? maxIdealWaterTemp,
-    double? maxWaterTemperature,
+
   }) {
     return ChartConfig(
       temperatureInterval: [
         0,
         minIdealTem ?? temperatureInterval[1],
         maxIdealTemp ?? temperatureInterval[2],
-        maxTemperature ?? temperatureInterval[3]
+        80
       ],
       humidityInterval: [
-        minHumidity ?? humidityInterval[0],
+        0,
         minIdealHum ?? humidityInterval[1],
         maxIdealHum ?? humidityInterval[2],
-        maxHumidity ?? humidityInterval[3]
+       100
       ],
       phInterval: [
         0,
@@ -83,16 +82,16 @@ class ChartConfig {
         10
       ],
       oxygenConcentrationInterval: [
-        minOxy ?? oxygenConcentrationInterval[0],
+      0,
         minIdealOxy ?? oxygenConcentrationInterval[1],
         maxIdealOxy ?? oxygenConcentrationInterval[2],
-        maxOxy ?? oxygenConcentrationInterval[3]
+       40
       ],
       waterTemperatureInterval: [
         0,
         minIdealWaterTem??waterTemperatureInterval[1],
         minIdealWaterTem??waterTemperatureInterval[2],
-        maxIdealWaterTemp??waterTemperatureInterval[3]
+       80
       ],
     );
   }

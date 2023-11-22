@@ -41,11 +41,11 @@ class RealTimeDataCard extends StatelessWidget {
             Icon(
               leadingIcon,
               size: Brand.textSize(context) * 2,
-              color: chartValue < 85
-                  ? chartValue > 65
-                      ? Colors.orangeAccent
-                      : Brand.darkTeal
-                  : Colors.redAccent,
+              // color: chartValue < 85
+              //     //? chartValue > 65
+              //         ? Colors.orangeAccent
+                     color : Brand.darkTeal
+                  // : Colors.redAccent,
             ),
             Text(
               title,

@@ -110,7 +110,8 @@ Map<String, dynamic> getValueDecoupled({required Uint8List valueReadFromBLE}) {
   if (listOfStrings.isEmpty) {
     return {};
   }
+  print("++++++++++++++++++++$listOfStrings++++++++++++++++++++");
   return {
-    listOfStrings[0]: num.parse(listOfStrings[1]).toDouble(),
+    listOfStrings[0].trim(): num.parse(listOfStrings[1].trim()).toDouble(),
   };
 }
