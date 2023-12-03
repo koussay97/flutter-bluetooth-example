@@ -32,7 +32,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
             .read<BluetoothViewModel>()
             .currentConnection
             ?.input
-            ?.listen((event) {
+            ?.asBroadcastStream()
+            .listen((event) {
           print(
               "this is the event coming from BLE ${String.fromCharCodes(event)}");
           context.read<DashboardViewModel>().readValue(valueReadFromBLE: event);

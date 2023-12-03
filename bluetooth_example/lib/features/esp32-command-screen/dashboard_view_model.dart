@@ -13,6 +13,7 @@ class DashboardViewModel extends ChangeNotifier {
   late double currentEcVal;
   late double currentDOxyVal;
   late double currentWaterTempVal;
+  late double currentAction1;
 
   void init() {
     chartConfig = ChartConfig.empty();
@@ -22,6 +23,7 @@ class DashboardViewModel extends ChangeNotifier {
     currentEcVal = 0.0;
     currentDOxyVal = 0.0;
     currentWaterTempVal = 0.0;
+    currentAction1 = 0.0;
     notifyListeners();
   }
 
@@ -54,7 +56,7 @@ class DashboardViewModel extends ChangeNotifier {
         break;
       case "Humidity":
         {
-          currentWaterTempVal = getAnchreValueInFraction(
+          currentHumidityVal = getAnchreValueInFraction(
               value: valueRead.values.first,
               min: chartConfig.humidityInterval[0],
               max: chartConfig.humidityInterval[3]);
@@ -63,7 +65,7 @@ class DashboardViewModel extends ChangeNotifier {
         break;
       case "Ph":
         {
-          currentWaterTempVal = getAnchreValueInFraction(
+          currentPhVal = getAnchreValueInFraction(
               value: valueRead.values.first,
               min: chartConfig.phInterval[0],
               max: chartConfig.phInterval[3]);
@@ -72,7 +74,7 @@ class DashboardViewModel extends ChangeNotifier {
         break;
       case "Ec":
         {
-          currentWaterTempVal = getAnchreValueInFraction(
+          currentEcVal = getAnchreValueInFraction(
               value: valueRead.values.first,
               min: chartConfig.waterQualityInterval[0],
               max: chartConfig.waterQualityInterval[3]);
@@ -81,15 +83,24 @@ class DashboardViewModel extends ChangeNotifier {
         break;
       case "Do":
         {
-          currentWaterTempVal = getAnchreValueInFraction(
+          currentDOxyVal = getAnchreValueInFraction(
               value: valueRead.values.first,
               min: chartConfig.oxygenConcentrationInterval[0],
               max: chartConfig.oxygenConcentrationInterval[3]);
           notifyListeners();
         }
         break;
+      //// what do we add "Led:0"
+      case "Led":
+        {
+          currentAction1 = valueRead.values.first;
+          notifyListeners();
+        }
+        break;
       default:
         {
+          currentAction1 = 9999.9;
+          notifyListeners();
           print("the key sent is unrecognized +++++ ${valueRead.keys.first}");
         }
     }
@@ -101,7 +112,7 @@ double getAnchreValueInFraction(
   if (value == null) {
     return 0.0;
   }
-  return ((value / (max - min)) * 100);
+  return value; //((value / (max - min)) * 100);
 }
 
 Map<String, dynamic> getValueDecoupled({required Uint8List valueReadFromBLE}) {

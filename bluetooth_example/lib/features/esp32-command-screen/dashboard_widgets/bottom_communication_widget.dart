@@ -1,12 +1,14 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:bluetooth_example/core/brand_guideline/brand_guidline.dart';
 import 'package:bluetooth_example/features/bluetooth_feature/bloototh_view_model.dart';
+import 'package:bluetooth_example/features/esp32-command-screen/dashboard_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-class BottomCommunicationWidget extends StatelessWidget {
+class BottomCommunicationWidget extends StatefulWidget {
   const BottomCommunicationWidget({
     Key? key,
     required this.deviceWidth,
@@ -15,15 +17,63 @@ class BottomCommunicationWidget extends StatelessWidget {
   final double deviceWidth;
 
   @override
+  State<BottomCommunicationWidget> createState() =>
+      _BottomCommunicationWidgetState();
+}
+
+class _BottomCommunicationWidgetState extends State<BottomCommunicationWidget> {
+  late StreamSubscription<Uint8List>? _subscription;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      setState(() {
+        _subscription = context
+            .read<BluetoothViewModel>()
+            .currentConnection
+            ?.input
+            ?.asBroadcastStream()
+            .listen((event) {
+          context.read<DashboardViewModel>().readValue(valueReadFromBLE: event);
+        });
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    _subscription = null;
+    super.dispose();
+  }
+
+  /* String readMessage = "";
+   Color messageColor=Colors.black;
+   getReadMessage(){
+
+    return _subscription?.onData((data) {
+      setState(() {
+        re
+      });
+    });
+
+
+  }*/
+
+  @override
   Widget build(BuildContext context) {
+    final valueRead =
+        context.select<DashboardViewModel, double>((val) => val.currentAction1);
+
     return InkWell(
         onTap: () {
           showModalBottomSheet(
               constraints: BoxConstraints(
-                  minWidth: deviceWidth,
-                  minHeight: deviceWidth * 0.1,
-                  maxWidth: deviceWidth,
-                  maxHeight: deviceWidth),
+                  minWidth: widget.deviceWidth,
+                  minHeight: widget.deviceWidth * 0.1,
+                  maxWidth: widget.deviceWidth,
+                  maxHeight: widget.deviceWidth),
               context: context,
               builder: (context) {
                 return Padding(
@@ -41,13 +91,15 @@ class BottomCommunicationWidget extends StatelessWidget {
                         ),
                       ),
                       SizedBox(
-                        height: deviceWidth * 0.1,
+                        height: widget.deviceWidth * 0.1,
                       ),
-                      StreamBuilder<Uint8List>(
+
+                      /*StreamBuilder<Uint8List>(
                           stream: context
                               .read<BluetoothViewModel>()
                               .currentConnection
-                              ?.input,
+                              ?.input
+                              ?.asBroadcastStream(),
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
                               return Text(
@@ -79,9 +131,19 @@ class BottomCommunicationWidget extends StatelessWidget {
                                 fontWeight: Brand.h2Weight,
                               ),
                             );
-                          }),
+                          }),*/
+                      Text(
+                        valueRead >= 9999
+                            ? 'no available data'
+                            : " action read1: $valueRead",
+                        style: GoogleFonts.poppins(
+                          color: valueRead >= 9999 ? Colors.blue : Colors.black,
+                          fontSize: Brand.h2Size(context),
+                          fontWeight: Brand.h2Weight,
+                        ),
+                      ),
                       SizedBox(
-                        height: deviceWidth * 0.2,
+                        height: widget.deviceWidth * 0.2,
                       ),
                       Row(children: [
                         InkWell(
@@ -90,12 +152,12 @@ class BottomCommunicationWidget extends StatelessWidget {
                                 .read<BluetoothViewModel>()
                                 .currentConnection
                                 ?.output
-                                .add(Uint8List.fromList('LED/1'.codeUnits));
+                                .add(Uint8List.fromList('Led:1'.codeUnits));
                           },
                           child: Container(
                             color: Colors.grey,
-                            height: deviceWidth * .1,
-                            width: deviceWidth * 0.1,
+                            height: widget.deviceWidth * .1,
+                            width: widget.deviceWidth * 0.1,
                             child: Center(
                                 child: Text(
                               'On',
@@ -108,7 +170,7 @@ class BottomCommunicationWidget extends StatelessWidget {
                           ),
                         ),
                         SizedBox(
-                          width: deviceWidth * 0.1,
+                          width: widget.deviceWidth * 0.1,
                         ),
                         InkWell(
                           onTap: () {
@@ -116,12 +178,12 @@ class BottomCommunicationWidget extends StatelessWidget {
                                 .read<BluetoothViewModel>()
                                 .currentConnection
                                 ?.output
-                                .add(Uint8List.fromList('LED/0'.codeUnits));
+                                .add(Uint8List.fromList('Led:0'.codeUnits));
                           },
                           child: Container(
-                            width: deviceWidth * 0.1,
+                            width: widget.deviceWidth * 0.1,
                             color: Colors.grey,
-                            height: deviceWidth * .1,
+                            height: widget.deviceWidth * .1,
                             child: Center(
                               child: Text(
                                 'Off',
@@ -148,8 +210,8 @@ class BottomCommunicationWidget extends StatelessWidget {
                       Radius.circular(Brand.appPadding(context: context) * 4),
                   topLeft:
                       Radius.circular(Brand.appPadding(context: context) * 4))),
-          height: deviceWidth * 0.1,
-          width: deviceWidth,
+          height: widget.deviceWidth * 0.1,
+          width: widget.deviceWidth,
           child: Center(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
