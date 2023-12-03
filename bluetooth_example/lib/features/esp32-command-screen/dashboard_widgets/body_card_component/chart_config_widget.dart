@@ -137,11 +137,11 @@ class ChartConfigForm extends StatelessWidget {
                         context.read<DashboardViewModel>().changeConfig(
                             config: instance.copyWith(minIdealTem: val));
                       },
-                       changedMax: (value) {
-                      //   final val = num.parse(value).toDouble();
-                      //   context.read<DashboardViewModel>().changeConfig(
-                      //       config: instance.copyWith(maxTemperature: val));
-                       },
+                      changedMax: (value) {
+                        //   final val = num.parse(value).toDouble();
+                        //   context.read<DashboardViewModel>().changeConfig(
+                        //       config: instance.copyWith(maxTemperature: val));
+                      },
                       changedMin: (value) {},
                       deviceWidth: deviceWidth,
                       interval: instance.temperatureInterval,
@@ -162,15 +162,15 @@ class ChartConfigForm extends StatelessWidget {
                         context.read<DashboardViewModel>().changeConfig(
                             config: instance.copyWith(minIdealHum: val));
                       },
-                       changedMax: (value) {
-                      //   final val = num.parse(value).toDouble();
-                      //   context.read<DashboardViewModel>().changeConfig(
-                      //       config: instance.copyWith(maxHumidity: val));
-                       },
-                       changedMin: (value) {
-                      //   final val = num.parse(value).toDouble();
-                      //   context.read<DashboardViewModel>().changeConfig(
-                      //       config: instance.copyWith(minHumidity: val));
+                      changedMax: (value) {
+                        //   final val = num.parse(value).toDouble();
+                        //   context.read<DashboardViewModel>().changeConfig(
+                        //       config: instance.copyWith(maxHumidity: val));
+                      },
+                      changedMin: (value) {
+                        //   final val = num.parse(value).toDouble();
+                        //   context.read<DashboardViewModel>().changeConfig(
+                        //       config: instance.copyWith(minHumidity: val));
                       },
                       deviceWidth: deviceWidth,
                       interval: instance.humidityInterval,
@@ -233,15 +233,15 @@ class ChartConfigForm extends StatelessWidget {
                         context.read<DashboardViewModel>().changeConfig(
                             config: instance.copyWith(minIdealOxy: val));
                       },
-                       changedMax: (value) {
-                      //   final val = num.parse(value).toDouble();
-                      //   context.read<DashboardViewModel>().changeConfig(
-                      //       config: instance.copyWith(maxOxy: val));
+                      changedMax: (value) {
+                        //   final val = num.parse(value).toDouble();
+                        //   context.read<DashboardViewModel>().changeConfig(
+                        //       config: instance.copyWith(maxOxy: val));
                       },
                       changedMin: (value) {
-                      //   final val = num.parse(value).toDouble();
-                      //   context.read<DashboardViewModel>().changeConfig(
-                      //       config: instance.copyWith(minOxy: val));
+                        //   final val = num.parse(value).toDouble();
+                        //   context.read<DashboardViewModel>().changeConfig(
+                        //       config: instance.copyWith(minOxy: val));
                       },
                       deviceWidth: deviceWidth,
                       interval: instance.oxygenConcentrationInterval,
@@ -262,12 +262,12 @@ class ChartConfigForm extends StatelessWidget {
                         context.read<DashboardViewModel>().changeConfig(
                             config: instance.copyWith(minIdealWaterTem: val));
                       },
-                       changedMax: (value) {
-                      //   final val = num.parse(value).toDouble();
-                      //   context.read<DashboardViewModel>().changeConfig(
-                      //       config:
-                      //           instance.copyWith(maxWaterTemperature: val));
-                       },
+                      changedMax: (value) {
+                        //   final val = num.parse(value).toDouble();
+                        //   context.read<DashboardViewModel>().changeConfig(
+                        //       config:
+                        //           instance.copyWith(maxWaterTemperature: val));
+                      },
                       changedMin: (value) {},
                       deviceWidth: deviceWidth,
                       interval: instance.waterTemperatureInterval,
@@ -288,7 +288,7 @@ class ChartConfigContent extends StatelessWidget {
   final double deviceWidth;
   final List<double> interval;
   final List<bool> valuesDisabled;
-  final Function(String) changedMin;
+  final Function(String) changedMin; // callback function
   final Function(String) changedMax;
   final Function(String) changedIdealMax;
   final Function(String) changedIdealMin;

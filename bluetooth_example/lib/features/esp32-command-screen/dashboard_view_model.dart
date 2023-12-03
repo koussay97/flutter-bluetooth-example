@@ -32,8 +32,8 @@ class DashboardViewModel extends ChangeNotifier {
 
   void readValue({required Uint8List valueReadFromBLE}) {
     final valueRead = getValueDecoupled(valueReadFromBLE: valueReadFromBLE);
-
-    switch (valueRead.keys.first) {
+    print("element read ::DashboardViewModel.readValue() $valueRead");
+    switch (valueRead.keys.first.trim()) {
       case "Temperature":
         {
           currentTemperatureVal = getAnchreValueInFraction(
@@ -101,17 +101,23 @@ double getAnchreValueInFraction(
   if (value == null) {
     return 0.0;
   }
-  return (value / (max - min)) * 100;
+  return ((value / (max - min)) * 100);
 }
 
 Map<String, dynamic> getValueDecoupled({required Uint8List valueReadFromBLE}) {
+  /// [1,32 ,35 ,656,656,5,6,5]
   final stringResult = String.fromCharCodes(valueReadFromBLE);
+
+  /// stringResult is like this ==> "Ec: 565"
+  /// ==> we need to convert it to {"EC": 232}
+
   final listOfStrings = stringResult.split(":");
   if (listOfStrings.isEmpty) {
     return {};
   }
-  print("++++++++++++++++++++$listOfStrings++++++++++++++++++++");
+  print("++++++++++++++++++++ $listOfStrings ++++++++++++++++++++");
   return {
-    listOfStrings[0].trim(): num.parse(listOfStrings[1].trim()).toDouble(),
+    listOfStrings[0].trim():
+        (num.tryParse(listOfStrings[1].trim()) ?? 0.0).toDouble(),
   };
 }

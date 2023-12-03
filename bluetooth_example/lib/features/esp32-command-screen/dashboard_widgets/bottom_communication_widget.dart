@@ -6,12 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-
 class BottomCommunicationWidget extends StatelessWidget {
   const BottomCommunicationWidget({
-    super.key,
+    Key? key,
     required this.deviceWidth,
-  });
+  }) : super(key: key);
 
   final double deviceWidth;
 
@@ -28,8 +27,7 @@ class BottomCommunicationWidget extends StatelessWidget {
               context: context,
               builder: (context) {
                 return Padding(
-                  padding: EdgeInsets.all(
-                      Brand.appPadding(context: context)),
+                  padding: EdgeInsets.all(Brand.appPadding(context: context)),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -52,10 +50,13 @@ class BottomCommunicationWidget extends StatelessWidget {
                               ?.input,
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
-                              return Text('value from BLE : ${String.fromCharCodes(snapshot.data!)}',
+                              return Text(
+                                  'value from BLE : ${String.fromCharCodes(snapshot.data ?? [
+                                        97,
+                                        99
+                                      ])}',
                                   style: GoogleFonts.poppins(
                                     color: Brand.darkTeal,
-
                                     fontSize: Brand.h4Size(context),
                                     fontWeight: Brand.h4Weight,
                                   ));
@@ -85,22 +86,25 @@ class BottomCommunicationWidget extends StatelessWidget {
                       Row(children: [
                         InkWell(
                           onTap: () {
-                            // final a = context.read<BluetoothViewModel>().currentConnection?.input?.listen((event) { });
                             context
                                 .read<BluetoothViewModel>()
                                 .currentConnection
                                 ?.output
-                                .add(Uint8List.fromList('1'.codeUnits));
+                                .add(Uint8List.fromList('LED/1'.codeUnits));
                           },
                           child: Container(
                             color: Colors.grey,
                             height: deviceWidth * .1,
-                            width: deviceWidth*0.1,
-                            child: Center(child: Text('On',style: GoogleFonts.poppins(
-                              color: Colors.white,
-                              fontSize: Brand.h2Size(context),
-                              fontWeight: Brand.h2Weight,
-                            ),)),
+                            width: deviceWidth * 0.1,
+                            child: Center(
+                                child: Text(
+                              'On',
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: Brand.h2Size(context),
+                                fontWeight: Brand.h2Weight,
+                              ),
+                            )),
                           ),
                         ),
                         SizedBox(
@@ -108,29 +112,29 @@ class BottomCommunicationWidget extends StatelessWidget {
                         ),
                         InkWell(
                           onTap: () {
-                            // final a = context.read<BluetoothViewModel>().currentConnection?.input?.listen((event) { });
                             context
                                 .read<BluetoothViewModel>()
                                 .currentConnection
                                 ?.output
-                                .add(Uint8List.fromList('0'.codeUnits));
+                                .add(Uint8List.fromList('LED/0'.codeUnits));
                           },
                           child: Container(
-                            width: deviceWidth*0.1,
+                            width: deviceWidth * 0.1,
                             color: Colors.grey,
                             height: deviceWidth * .1,
                             child: Center(
-                              child: Text('Off',style:  GoogleFonts.poppins(
-                                color: Colors.white,
-                                fontSize: Brand.h2Size(context),
-                                fontWeight: Brand.h2Weight,
-                              ),),
+                              child: Text(
+                                'Off',
+                                style: GoogleFonts.poppins(
+                                  color: Colors.white,
+                                  fontSize: Brand.h2Size(context),
+                                  fontWeight: Brand.h2Weight,
+                                ),
+                              ),
                             ),
                           ),
                         ),
-
                       ]),
-
                     ],
                   ),
                 );
@@ -140,10 +144,10 @@ class BottomCommunicationWidget extends StatelessWidget {
           decoration: BoxDecoration(
               color: Brand.darkTeal,
               borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(
-                      Brand.appPadding(context: context) * 4),
-                  topLeft: Radius.circular(
-                      Brand.appPadding(context: context) * 4))),
+                  topRight:
+                      Radius.circular(Brand.appPadding(context: context) * 4),
+                  topLeft:
+                      Radius.circular(Brand.appPadding(context: context) * 4))),
           height: deviceWidth * 0.1,
           width: deviceWidth,
           child: Center(

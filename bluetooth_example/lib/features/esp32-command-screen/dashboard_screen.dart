@@ -34,9 +34,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ?.input
             ?.listen((event) {
           print(
-
-              "this is the event coming from BLE ${String.fromCharCodes (event)}");
-          context.read<DashboardViewModel>().readValue(valueReadFromBLE:event);
+              "this is the event coming from BLE ${String.fromCharCodes(event)}");
+          context.read<DashboardViewModel>().readValue(valueReadFromBLE: event);
         });
       });
     });
@@ -59,17 +58,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final chartConfig = context
         .select<DashboardViewModel, ChartConfig>((value) => value.chartConfig);
     final temperatureVal = (context.select<DashboardViewModel, double>(
-        (value) => value.currentTemperatureVal)) / 1.25;
+            (value) => value.currentTemperatureVal)) /
+        1.25;
     final humidityVal = (context.select<DashboardViewModel, double>(
-            (value) => value.currentHumidityVal));
-    final phVal =( context
-        .select<DashboardViewModel, double>((value) => value.currentPhVal))/7.142;
-    final DoVal = (context
-        .select<DashboardViewModel, double>((value) => value.currentDOxyVal) ) / 2.25;
-    final ECVal = (context
-        .select<DashboardViewModel, double>((value) => value.currentEcVal)) / 10;
+        (value) => value.currentHumidityVal));
+    final phVal = (context.select<DashboardViewModel, double>(
+            (value) => value.currentPhVal)) /
+        7.142;
+    final DoVal = (context.select<DashboardViewModel, double>(
+            (value) => value.currentDOxyVal)) /
+        2.25;
+    final ECVal = (context.select<DashboardViewModel, double>(
+            (value) => value.currentEcVal)) /
+        10;
     final waterTemperatureVal = (context.select<DashboardViewModel, double>(
-            (value) => value.currentWaterTempVal)) / 1.25 ;
+            (value) => value.currentWaterTempVal)) /
+        1.25;
     return Scaffold(
       appBar: AppBar(
           backgroundColor: Brand.darkTeal,
@@ -188,7 +192,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                   ),*/
                   Padding(
-                     
                     padding: EdgeInsets.symmetric(
                       horizontal: Brand.appPadding(context: context),
                     ),
@@ -282,11 +285,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         SizedBox(
                           height: deviceWidth * 0.2,
                         ),
-
                       ],
                     ),
                   ),
-
                 ],
               ),
             ),
